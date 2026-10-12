@@ -1,0 +1,123 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+
+model User {
+  id           String        @id @default(uuid()) @db.Uuid
+  name         String        @db.VarChar(100)
+  email        String        @unique @db.VarChar(100)
+  password     String        @db.VarChar(255)
+  avatar       String?       @db.VarChar(255)
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  transactions Transaction[]
+  plans        Plan[]
+
+  @@map("users")
+}
+
+model Category {
+  id                String             @id @default(uuid()) @db.Uuid
+  name              String             @db.VarChar(100)
+  type              String             @db.VarChar(20)
+  icon              String?            @db.VarChar(50)
+  color             String?            @db.VarChar(20)
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  transactions      Transaction[]
+  planTransactions  PlanTransaction[]
+
+  @@map("categories")
+}
+
+model Transaction {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @map("user_id") @db.Uuid
+  categoryId      String   @map("category_id") @db.Uuid
+  type            String   @db.VarChar(20)
+  amount          Decimal  @db.Decimal(15, 2)
+  description     String?
+  transactionDate DateTime @map("transaction_date") @db.Date
+  status          String   @default("success") @db.VarChar(20)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([transactionDate])
+  @@map("transactions")
+}
+
+model Plan {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  name        String   @db.VarChar(100)
+  totalBudget Decimal  @map("total_budget") @db.Decimal(15, 2)
+  startDate   DateTime @map("start_date") @db.Date
+  endDate     DateTime @map("end_date") @db.Date
+  status      String   @default("active") @db.VarChar(20)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weeks        PlanWeek[]
+  transactions PlanTransaction[]
+
+  @@index([userId])
+  @@map("plans")
+}
+
+model PlanWeek {
+  id              String   @id @default(uuid()) @db.Uuid
+  planId          String   @map("plan_id") @db.Uuid
+  weekNumber      Int      @map("week_number")
+  startDate       DateTime @map("start_date") @db.Date
+  endDate         DateTime @map("end_date") @db.Date
+  budgetAmount    Decimal  @map("budget_amount") @db.Decimal(15, 2)
+  spentAmount     Decimal  @default(0) @map("spent_amount") @db.Decimal(15, 2)
+  remainingAmount Decimal  @default(0) @map("remaining_amount") @db.Decimal(15, 2)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  plan         Plan              @relation(fields: [planId], references: [id], onDelete: Cascade)
+  transactions PlanTransaction[]
+
+  @@unique([planId, weekNumber])
+  @@index([planId])
+  @@map("plan_weeks")
+}
+
+model PlanTransaction {
+  id              String   @id @default(uuid()) @db.Uuid
+  planId          String   @map("plan_id") @db.Uuid
+  weekId          String   @map("week_id") @db.Uuid
+  categoryId      String?  @map("category_id") @db.Uuid
+  amount          Decimal  @db.Decimal(15, 2)
+  description     String?
+  transactionDate DateTime @map("transaction_date") @db.Date
+  status          String   @default("success") @db.VarChar(20)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  plan     Plan      @relation(fields: [planId], references: [id], onDelete: Cascade)
+  week     PlanWeek  @relation(fields: [weekId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([planId])
+  @@index([weekId])
+  @@index([categoryId])
+  @@index([transactionDate])
+  @@map("plan_transactions")
+}
