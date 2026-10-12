@@ -46,8 +46,8 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="flex h-full flex-col justify-between px-4">
-      <div className="flex flex-col gap-20">
+    <div className="flex h-full flex-col justify-between px-4 relative">
+      <div className="flex flex-col gap-20 z-20 relative">
         <div className="flex gap-1 items-center justify-center mt-2">
             <BadgeDollarSign className="w-10 text-sky-400"/>
             <div className="">
@@ -56,7 +56,7 @@ export default function Sidebar() {
             </div>
         </div>
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 relative">
           {menu.map((item) => {
             const isActive = pathname === item.path;
 
@@ -78,10 +78,19 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <button className="mb-5 flex gap-5 px-6 py-3 hover:bg-[#F0EEFF]/20 rounded-lg transition-all duration-200 cursor-pointer text-gray-200 hover:text-white hover:">
+      <button className="mb-5 z-20 flex gap-5 px-6 py-3 hover:bg-[#F0EEFF]/20 rounded-lg transition-all duration-200 cursor-pointer text-gray-200 hover:text-white hover:">
         <LogOut />
         <span>Logout</span>
       </button>
+
+{/* glo */}
+      <div className="absolute z-0 h-50 w-50 rounded-full bg-primary-light/5 -top-15 -left-30"></div>
+      <div className="absolute z-0 h-10 w-10 rounded-full bg-primary-light/5 top-15 left-30"></div>
+      <div className="absolute z-0 h-10 w-10 rounded-full bg-primary-light/5 top-20 left-30"></div>
+  <div className="absolute z-0 h-50 w-50 rounded-full bg-primary-light/10 -bottom-10 -right-25"></div>
+  <div className="absolute z-0 h-50 w-50 rounded-full border border-primary-light/10 -bottom-10 -right-10"></div>
+  <div className="absolute z-0 h-20 w-20 rounded-full bg-primary-light/10 bottom-50 -left-15"></div>
+  <div className="absolute z-0 h-20 w-20 rounded-full border border-primary-light/10 bottom-40 -left-15"></div>
     </div>
   );
 }
