@@ -1,15 +1,16 @@
-import { MoveRight, Plus } from "lucide-react";
+import {  MoveRight, Plus } from "lucide-react";
 
 export default function Welcome(){
     return(
         <div className="border  rounded-2xl px-6 py-6 bg-primary text-white space-y-2 relative overflow-hidden">
-  
-                   <h2 className="text-5xl z-10 brightness-125">Hallo, Bileam</h2>
-           <p className="text-lg text-gray-300 z-10">Kelola Kuanganmu dengan lebih baik di sini</p>
-            <button className="flex gap-2 z-10 items-center py-2 px-4 hover:gap-4 transition-all duration-500 hover:translate-y-2 cursor-pointer hover:brightness-110 bg-primary-light rounded-full text-primary">
-            <Plus/>
+     <div className="flex justify-between items-center">
+        <div><h2 className="text-5xl z-10 brightness-125">Hallo, Bileam</h2>
+           <p className="text-lg text-gray-300 z-10">Kelola Kuanganmu dengan lebih baik di sini</p></div>
+    <button className="flex gap-2 z-10 items-center py-2 px-4 hover:gap-4 transition-all duration-500 hover:translate-y-2 cursor-pointer hover:brightness-110 bg-primary-light/60 rounded-full text-primary">
             <span>Lihat ringkasan</span> 
+            <MoveRight/>
             </button>
+     </div>     
           {/*glow  */}
        <div className="w-30 rounded-full h-30 bg-primary-light/20 absolute -bottom-5 -left-10"></div>
        <div className="w-30 rounded-full h-30 bg-primary-light/20 absolute z-10 -bottom-12 left-40"></div>

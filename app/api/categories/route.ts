@@ -9,14 +9,12 @@ export async function GET() {
         name: "asc",
       },
     });
-
     return NextResponse.json({
       success: true,
       data: categories,
     });
   } catch (error) {
     console.error("Gagal mengambil kategori:", error);
-
     return NextResponse.json(
       {
         success: false,
@@ -32,13 +30,12 @@ export async function POST(request:NextRequest){
 try {
     const body = await request.json()
     const {name,type,icon,color} = body
-
+    
     if(!name || !type){
         return NextResponse.json({
             success : false,
             message:"nama dan tipe categori wajib di isi"
         },{status:400})
-    
     }
     
     if(!["income","expense"].includes(type)){
@@ -47,6 +44,7 @@ try {
             { status: 400 }
           );
     }
+    
     const  categories = await prisma.category.create(
         {
             data:{
@@ -64,7 +62,6 @@ try {
 
 } catch (error) {
     console.error("Gagal menambahkan kategori:", error);
-
     return NextResponse.json(
       { success: false, message: "Gagal menambahkan kategori" },
       { status: 500 }

@@ -14,12 +14,12 @@ return(
     <div className="py-6 gap-6 grid grid-cols-3">
         {
             items.map((item,index)=>(
- <div key={index} className={`py-2 flex gap-3  shadow  shadow-${item.colortext} rounded-lg items-center px-5`}>
+ <div key={index} className={`py-2 flex gap-3 hover:-translate-y-2 transition-all duration-500  shadow shadow-primary/15 bg-primary-light  rounded-lg items-center px-5`}>
  
   <div className={`p-2 h-10 rounded-full  ${item.color}`}>{item.icon}</div>
  <div className="flex flex-col gap-2">
     <p className="text-gray-400">{item.judul}</p>
-    <h2 className="text-2xl font-bold">{item.total}</h2>
+    <h2 className="text-2xl font-bold text-primary-dark">{item.total}</h2>
     <div className="flex gap-2">
         <p className="text-gray-400"><span className={`text-${item.colortext}`}>{item.persen}</span>  dari tahun lalu</p>
     </div>

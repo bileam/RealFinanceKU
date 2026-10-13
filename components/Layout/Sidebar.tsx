@@ -51,7 +51,7 @@ export default function Sidebar() {
         <div className="flex gap-1 items-center justify-center mt-2">
             <BadgeDollarSign className="w-10 text-sky-400"/>
             <div className="">
-                <h2 className="-mb-3">Finance<span className="font-sans text-2xl">Ku</span></h2>
+                <h2 className="-mb-3 text-2xl" >Finance<span className="font-sans text-2xl">Ku</span></h2>
                 <span className="text-[10px] text-gray-300  inline-block">personal finance manajement</span>
             </div>
         </div>
