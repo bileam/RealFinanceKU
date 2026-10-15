@@ -4,7 +4,6 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request:NextRequest){
     try {
         const idUser = request.nextUrl.searchParams.get("idUser")
-      
         if(!idUser){
             return NextResponse.json({
                 success: false,

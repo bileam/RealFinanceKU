@@ -6,7 +6,6 @@ export async function GET(request: NextRequest) {
   try {
     // 1. Mengambil idUser dari query parameter URL
     const idUser = request.nextUrl.searchParams.get("idUser");
-
     // 2. Validasi: pastikan idUser dikirim
     if (!idUser) {
       return NextResponse.json(
@@ -17,7 +16,6 @@ export async function GET(request: NextRequest) {
         { status: 400 }
       );
     }
-
     // 3. Menghitung total pemasukan pengguna
     const incomeResult = await prisma.transaction.aggregate({
       where: {
@@ -49,20 +47,23 @@ export async function GET(request: NextRequest) {
 
     // 6. Menghitung saldo
     const saldo = pemasukan - pengeluaran;
-
     // 7. Mengirim respons ke frontend
     return NextResponse.json({
       success: true,
-      data: {
-        pemasukan,
-        pengeluaran,
-        sisa_saldo: saldo,
-      },
+      data: [
+        {name:"pemasukan",total:pemasukan},
+        {name:"pengeluaran",total:pengeluaran},
+        {name:"jumlah_saldo",total:saldo}
+      ]
+      // {
+      //   pemasukan,
+      //   pengeluaran,
+      //   sisa_saldo: saldo,
+      // },
     });
   } catch (error) {
     // 8. Mencatat error untuk diperiksa di terminal
     console.error("Terjadi kesalahan saat mengambil data:", error);
-
     return NextResponse.json(
       {
         success: false,

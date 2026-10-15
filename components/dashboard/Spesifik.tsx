@@ -1,50 +1,177 @@
-import { MoveDown, MoveUp, Wallet } from "lucide-react"
+"use client";
 
-export default function Spesifik(){
-    const items = [
-        {
-            id:"1",judul:"Total Pemasukan",icon:<MoveUp className="text-green-600"/>,color:"bg-green-600/20", colortext:"green-600",total:"Rp. 5.200.000",persen:"20%"
-        
-        },
-        {    id:"2",judul:"Total Pengeluaran",icon:<MoveDown className="text-red-600"/>,color:"bg-red-600/20",colortext:"red-600",total:"Rp. 3.180.000",persen:"10%"},
-        {   
-            id:"3",judul:"Saldo Saat ini",icon:<Wallet className="text-sky-600"/>,color:"bg-sky-600/20",colortext:"sky-600",total:"Rp. 2.060.000",persen:"13%"}
-    ]
-return(
-    <div className="py-6 gap-6 grid grid-cols-3">
-        {
-            items.map((item,index)=>(
- <div key={index} className={`py-2 hover:-translate-y-2 transition-all duration-500  shadow shadow-primary/15 bg-primary-light  rounded-lg items-center px-5`}>
- {/* {item.id === "1" &&(
-    <div>testing</div>
- )} */}
- <div className="py-2 flex gap-3 items-center ">
-     <div className={`p-2 h-10 rounded-full  ${item.color}`}>{item.icon}</div>
- <div className="flex flex-col gap-2 w-full">
+import { useCallback, useEffect, useState } from "react";
+import { MoveDown, MoveUp, Wallet } from "lucide-react";
 
-    {item.id === "1"&&(
-        <div className="flex justify-between w-full ">
-            <p className={`text-gray-400 `}>{item.judul}</p>
-            <select name="" id="" className="outline-none ring-none rounded-xl px-2 bg-primary-dark text-primary-light ">
-                <option value="">bulanan</option>
-                <option value="">All</option>
-            </select>
+type TransactionSummary = {
+  name: string;
+  total: number;
+};
+
+type ApiResponse = {
+  success: boolean;
+  data: TransactionSummary[];
+};
+
+export default function Spesifik() {
+  const [dataTransaction, setDataTransaction] = useState<
+    TransactionSummary[]
+  >([]);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fungsi mengambil data dari API
+  const getTransaction = useCallback(async () => {
+    try {
+      setError(null);
+
+      const response = await fetch(
+        "/api/allday?idUser=de2ce9d4-a628-46a2-9784-48710c51f46f",
+        { cache: "no-store" }
+      );
+
+      if (!response.ok) {
+        throw new Error("Data tidak berhasil diambil");
+      }
+
+      const result: ApiResponse = await response.json();
+
+      if (!result.success) {
+        throw new Error("API gagal mengambil data");
+      }
+
+      setDataTransaction(result.data);
+    } catch (err: unknown) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Terjadi kesalahan"
+      );
+    }
+  }, []);
+
+  // Fetch pertama kali ketika komponen dibuka
+  useEffect(() => {
+    async function loadInitialData() {
+      setLoading(true);
+
+      try {
+        await getTransaction();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadInitialData();
+  }, [getTransaction]);
+
+  // Cari total berdasarkan nama
+  function getTotal(name: string): number {
+    const result = dataTransaction.find(
+      (item) => item.name === name
+    );
+
+    return result?.total ?? 0;
+  }
+
+  // Format angka menjadi Rupiah
+  function formatRupiah(total: number): string {
+    return total.toLocaleString("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      maximumFractionDigits: 0,
+    });
+  }
+
+  const items = [
+    {
+      id: "1",
+      name: "pemasukan",
+      judul: "Total Pemasukan",
+      icon: <MoveUp className="text-green-600" />,
+      color: "bg-green-600/20",
+      colortext: "text-green-600",
+      persen: "20%",
+    },
+    {
+      id: "2",
+      name: "pengeluaran",
+      judul: "Total Pengeluaran",
+      icon: <MoveDown className="text-red-600" />,
+      color: "bg-red-600/20",
+      colortext: "text-red-600",
+      persen: "10%",
+    },
+    {
+      id: "3",
+      name: "jumlah_saldo",
+      judul: "Saldo Saat Ini",
+      icon: <Wallet className="text-sky-600" />,
+      color: "bg-sky-600/20",
+      colortext: "text-sky-600",
+      persen: "13%",
+    },
+  ];
+
+  if (loading) {
+    return <p className="py-6">Memuat ringkasan transaksi...</p>;
+  }
+
+  if (error) {
+    return (
+      <div className="py-6">
+        <p className="text-red-600">Error: {error}</p>
+        <button
+          onClick={getTransaction}
+          className="mt-2 rounded-lg bg-primary-dark px-3 py-2 text-primary-light"
+        >
+          Coba lagi
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 gap-6 py-6 md:grid-cols-3">
+      {items.map((item) => (
+        <div
+          key={item.id}
+          className="items-center rounded-lg bg-primary-light px-5 py-2 shadow shadow-primary/15 transition-all duration-500 hover:-translate-y-2"
+        >
+          <div className="flex items-center gap-3 py-2">
+            <div className={`h-10 rounded-full p-2 ${item.color}`}>
+              {item.icon}
             </div>
-    )} 
-    <p className={`text-gray-400 ${item.id != "1"?"block":"hidden"}`}>{item.judul}</p>
-    <h2 className="text-2xl font-bold text-primary-dark">{item.total}</h2>
-    <div className="flex gap-2">
-        <p className="text-gray-400"><span className={`text-${item.colortext}`}>{item.persen}</span>  dari tahun lalu</p>
-    </div>
-</div>
- </div>
- 
+
+            <div className="flex w-full flex-col gap-2">
+              {item.id === "1" ? (
+                <div className="flex w-full justify-between">
+                  <p className="text-gray-400">{item.judul}</p>
+
+                  <select className="rounded-xl bg-primary-dark px-2 text-primary-light outline-none">
+                    <option value="bulanan">Bulanan</option>
+                    <option value="all">Semua</option>
+                  </select>
+                </div>
+              ) : (
+                <p className="text-gray-400">{item.judul}</p>
+              )}
+
+              <h2 className="text-2xl font-bold text-primary-dark">
+                {formatRupiah(getTotal(item.name))}
+              </h2>
+
+              <p className="text-gray-400">
+                <span className={item.colortext}>
+                  {item.persen}
+                </span>{" "}
+                dari tahun lalu
+              </p>
+            </div>
+          </div>
         </div>
-            ))
-        }
-       
-       
-      
+      ))}
     </div>
-)
+  );
 }
