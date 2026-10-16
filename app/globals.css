@@ -3,6 +3,73 @@
 @import "tailwindcss";
 @plugin '@tailwindcss/forms';
 
+:root {
+  /* Brand */
+  --primary: #5145cd;
+  --primary-dark: #4035b5;
+  --primary-light: #f0eeff;
+  --primary-soft: #e9e8fa;
+
+  /* Background & surface */
+  --background: #f5f7fc;
+  --surface: #ffffff;
+  --surface-muted: #eef1fa;
+
+  /* Text */
+  --foreground: #20234a;
+  --text-secondary: #6b7280;
+  --text-muted: #969bb2;
+
+  /* Border */
+  --border: #e5e7ef;
+
+  /* Financial status */
+  --success: #10b981;
+  --success-light: #ddf8ed;
+
+  --danger: #f0445e;
+  --danger-light: #ffe7ec;
+
+  --warning: #f59e0b;
+  --warning-light: #fff4d6;
+
+  /* Radius */
+  --radius-card: 16px;
+}
+
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-light: var(--primary-light);
+  --color-primary-soft: var(--primary-soft);
+
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+
+  --color-foreground: var(--foreground);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-border: var(--border);
+
+  --color-success: var(--success);
+  --color-success-light: var(--success-light);
+  --color-danger: var(--danger);
+  --color-danger-light: var(--danger-light);
+  --color-warning: var(--warning);
+  --color-warning-light: var(--warning-light);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
 @theme {
   --font-sans: "DM Sans", sans-serif;
 
@@ -462,11 +529,9 @@
   /* Shadows */
   --shadow-xs: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
   --shadow-sm: 0px 1px 3px 0px rgba(16, 24, 40, 0.1);
-  --shadow-md:
-    0px 4px 8px -2px rgba(16, 24, 40, 0.1),
+  --shadow-md: 0px 4px 8px -2px rgba(16, 24, 40, 0.1),
     0px 2px 4px -2px rgba(16, 24, 40, 0.06);
-  --shadow-lg:
-    0px 12px 16px -4px rgba(16, 24, 40, 0.08),
+  --shadow-lg: 0px 12px 16px -4px rgba(16, 24, 40, 0.08),
     0px 4px 6px -2px rgba(16, 24, 40, 0.03);
   --shadow-xl: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
   --shadow-2xl: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
