@@ -5,16 +5,16 @@ import PieChartWithCenterLabel from "../MUI/PieChartWithCenterLabel";
 export default function Grafik(){
     return(
         <div className="flex gap-4">
-            <div className="w-[40%] shadow shadow-primary/15 bg-primary-light px-4 py-2">
+            <div className="w-[60%] shadow shadow-primary/15 bg-primary-light px-4 py-2">
                 <div className="flex justify-between w-full">
                     <h3 className="text-primary-dark text-lg font-bold">Ringkasa Kuangan</h3>
                 </div>
                  <DashedLineChart/>
             </div>
-            <div className="flex-1 shadow shadow-primary/15 bg-primary-light flex flex-col gap-3 px-4 py-2">
+            {/* <div className="flex-1 shadow shadow-primary/15 bg-primary-light flex flex-col gap-3 px-4 py-2">
                 <h2 className="text-primary-dark text-lg font-bold">Kategori Pengeluaran</h2>
                     <div className="mt-8"><PieChartWithCenterLabel/></div>
-            </div>
+            </div> */}
             <div className="flex-1 shadow shadow-primary/15 bg-primary-light ">
                 <div className="flex justify-between items-center">
                     <span className="text-primary-dark px-2 py-2 text-lg font-bold">Aktivitas Terbaru</span>
