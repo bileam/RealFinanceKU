@@ -46,7 +46,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className="flex h-full flex-col justify-between px-4 relative">
+    <div className=" h-full flex-col justify-between px-4 relative flex">
       <div className="flex flex-col gap-20 z-20 relative">
         <div className="flex gap-1 items-center justify-center mt-2">
             <BadgeDollarSign className="w-10 text-sky-400"/>
@@ -55,7 +55,6 @@ export default function Sidebar() {
                 <span className="text-[10px] text-gray-300  inline-block">personal finance manajement</span>
             </div>
         </div>
-
         <div className="flex flex-col gap-6 relative">
           {menu.map((item) => {
             const isActive = pathname === item.path;

@@ -1,48 +1,155 @@
-"use client"
-import Box from '@mui/material/Box';
-import { LineChart, lineClasses } from '@mui/x-charts/LineChart';
 
-const margin = { right: 24 };
-const uData = [35000,15000,20000,30000,12000,17000,20000];
-// const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
-const xLabels = [
-  '1 Okt',
-  '2 Okt',
-  '3 Okt',
-  '4 Okt',
-  '5 Okt',
-  '6 Okt',
-  '7 Okt',
-];
+"use client";
+
+import { useEffect, useState } from "react";
+import Box from "@mui/material/Box";
+import { BarChart } from "@mui/x-charts/BarChart";
+
+type ChartItem = {
+  tanggal: string;
+  pemasukan: number;
+  pengeluaran: number;
+};
+
+type ApiResponse = {
+  success: boolean;
+  data: ChartItem[];
+};
+
+const formatRupiah = (value: number) =>
+  `Rp ${new Intl.NumberFormat("id-ID", {
+    maximumFractionDigits: 0,
+  }).format(value)}`;
 
 export default function DashedLineChart() {
+  const [chartData, setChartData] = useState<ChartItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function fetchChart() {
+      try {
+        const response = await fetch(
+          "http://localhost:3000/api/chartmonth?idUser=de2ce9d4-a628-46a2-9784-48710c51f46f"
+        );
+
+        if (!response.ok) {
+          throw new Error("Gagal mengambil data chart");
+        }
+
+        const result: ApiResponse = await response.json();
+
+        if (!result.success) {
+          throw new Error("Data chart tidak berhasil diambil");
+        }
+
+        setChartData(result.data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Terjadi kesalahan"
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchChart();
+  }, []);
+
+  if (loading) return <p>Memuat grafik...</p>;
+  if (error) return <p>{error}</p>;
+
+  const uData = chartData.map((item) => item.pemasukan);
+  const pData = chartData.map((item) => -item.pengeluaran);
+  const xLabels = chartData.map((item) => item.tanggal);
+
+  const maxValue = Math.max(0, ...uData, ...pData.map(Math.abs));
+  const yLimit = Math.max(
+    1000000,
+    Math.ceil(maxValue / 250000) * 250000
+  );
+
   return (
-    <Box sx={{ width: '100%', height: 300 }}>
-      <LineChart
+    <Box
+      sx={{
+        width: "100%",
+        height: 300,
+        // backgroundColor: "#FFFFFF",
+        borderRadius: "12px",
+        overflow: "hidden",
+      }}
+    >
+      <BarChart
+        height={300}
+        borderRadius={4}
+        margin={{
+          top: 15,
+          right: 20,
+          bottom: 30,
+          left: 8,
+        }}
         series={[
-          // { data: pData, label: 'pv', id: 'pvId', showMark: true },
-          { data: uData, label: 'uv', id: 'uvId', showMark: true },
+          {
+            data: uData,
+            label: "Pemasukan",
+            id: "income",
+            color: "#1976D2",
+            valueFormatter: (value) =>
+              formatRupiah(value ?? 0),
+          },
+          {
+            data: pData,
+            label: "Pengeluaran",
+            id: "expense",
+            color: "#EF4444",
+            valueFormatter: (value) =>
+              formatRupiah(value ?? 0),
+          },
         ]}
-        xAxis={[{ scaleType: 'point', data: xLabels, height: 28 }]}
-        yAxis={[{ width: 50 }]}
+        xAxis={[
+          {
+            scaleType: "band",
+            data: xLabels,
+            tickLabelInterval: (_value, index) =>
+              index % 5 === 0 ||
+              index === xLabels.length - 1,
+            tickLabelStyle: {
+              fontSize: 11,
+              fill: "#777DA5",
+            },
+          },
+        ]}
+        yAxis={[
+          {
+            min: -yLimit,
+            max: yLimit,
+            tickNumber: 5,
+            width: 92,
+            valueFormatter: (value: number) => formatRupiah(value),
+            tickLabelStyle: {
+              fontSize: 11,
+              fill: "#777DA5",
+            },
+          },
+        ]}
+        grid={{
+          horizontal: true,
+          vertical: true,
+        }}
         sx={{
-          [`.${lineClasses.line}, .${lineClasses.mark}`]: {
-            strokeWidth: 1,
+          "& .MuiChartsGrid-line": {
+            stroke: "#E9EAF8",
+            strokeOpacity: 0.85,
           },
-          [`.${lineClasses.line}[data-series="pvId"]`]: {
-            strokeDasharray: '5 5',
+
+          "& .MuiChartsAxis-line": {
+            stroke: "#E9EAF8",
           },
-          [`.${lineClasses.line}[data-series="uvId"]`]: {
-            strokeDasharray: '3 4 5 2',
-          },
-          [`.${lineClasses.mark}:not([data-highlighted="true"])`]: {
-            fill: '#fff',
-          },
-          [`& [data-highlighted="true"]`]: {
-            stroke: 'none',
+
+          "& .MuiChartsAxis-tick": {
+            stroke: "transparent",
           },
         }}
-        margin={margin}
       />
     </Box>
   );
