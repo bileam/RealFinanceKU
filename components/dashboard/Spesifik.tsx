@@ -113,9 +113,46 @@ export default function Spesifik() {
       persen: "13%",
     },
   ];
+const loadingTrue = "bg-gray-200"
 
   if (loading) {
-    return <p className="py-6">Memuat ringkasan transaksi...</p>;
+    return   <div className="grid grid-cols-1 gap-6 py-6 md:grid-cols-3 h-50">
+    {items.map((item) => (
+      <div
+        key={item.id}
+        className="items-center rounded-lg bg-primary-light px-5 py-2 shadow shadow-primary/15 transition-all duration-500 hover:-translate-y-2"
+      >
+        <div className="flex items-center gap-3 py-2">
+          <div className={`h-10 w-12 rounded-full p-2 ${loadingTrue}`}> 
+          </div>
+          <div className="flex w-full flex-col gap-2">
+            {item.id === "1" ? (
+              <div className="flex w-full justify-between">
+                <p className={`${loadingTrue} rounded-full w-50 `}></p>
+
+                <select className={`  w-20 rounded-full p-2 ${loadingTrue} px-2 text-primary-light  outline-none`}>
+                  {/* <option value="bulanan">Bulanan</option>
+                  <option value="all">Semua</option> */}
+                </select>
+              </div>
+            ) : (
+              <p className={`${loadingTrue} rounded-full w-50 `}></p>
+            )}
+
+            <h2 className={`text-2xl font-bold ${loadingTrue} rounded-full w-50`}>
+             
+            </h2>
+            <p className={`text-gray-400 ${loadingTrue} rounded-full h-10 w-10  `}>
+              <span className={ `${item.colortext} ${loadingTrue} rounded-full h-10 w-10`}>
+                {/* {item.persen} */}
+              </span>{" "}
+              {/* dari tahun lalu */}
+            </p>
+          </div>
+        </div>
+      </div>
+    ))}
+  </div>
   }
 
   if (error) {
@@ -143,7 +180,6 @@ export default function Spesifik() {
             <div className={`h-10 rounded-full p-2 ${item.color}`}>
               {item.icon}
             </div>
-
             <div className="flex w-full flex-col gap-2">
               {item.id === "1" ? (
                 <div className="flex w-full justify-between">
@@ -161,7 +197,6 @@ export default function Spesifik() {
               <h2 className="text-2xl font-bold text-primary-dark">
                 {formatRupiah(getTotal(item.name))}
               </h2>
-
               <p className="text-gray-400">
                 <span className={item.colortext}>
                   {item.persen}

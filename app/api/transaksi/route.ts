@@ -15,16 +15,27 @@ export async function GET(request:NextRequest){
 
         }
         const transactions = await prisma.transaction.findMany({
-         where:{
+            where:{
             userId:idUser
+         },select:{
+            id:true,
+            type:true,
+            amount:true,
+            description:true,
+            transactionDate:true,
+            status:true,
+            createdAt:true,
+            updatedAt:true
          },orderBy:{
            transactionDate:"asc"}
         })
+      
         return NextResponse.json({
             success:true,
             count:transactions.length,
             data:transactions
         })
+
     } catch (error) {
         console.error("server sedang bermasalah",error)
         return NextResponse.json({
@@ -80,7 +91,6 @@ const DataTransaction = await prisma.transaction.create({
         categoryId,
         type,amount,
         description,
-
         transactionDate:new Date(transactionDate),
         status
     }

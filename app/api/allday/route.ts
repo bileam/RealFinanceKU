@@ -48,18 +48,15 @@ export async function GET(request: NextRequest) {
     // 6. Menghitung saldo
     const saldo = pemasukan - pengeluaran;
     // 7. Mengirim respons ke frontend
+    const id = 1
     return NextResponse.json({
       success: true,
       data: [
-        {name:"pemasukan",total:pemasukan},
-        {name:"pengeluaran",total:pengeluaran},
-        {name:"jumlah_saldo",total:saldo}
+        {id:1,name:"pemasukan",total:pemasukan},
+        {id:2,name:"pengeluaran",total:pengeluaran},
+        {id:3,name:"jumlah_saldo",total:saldo}
       ]
-      // {
-      //   pemasukan,
-      //   pengeluaran,
-      //   sisa_saldo: saldo,
-      // },
+    
     });
   } catch (error) {
     // 8. Mencatat error untuk diperiksa di terminal
