@@ -7,7 +7,6 @@ CREATE TABLE "users" (
     "avatar" VARCHAR(255),
     "created_at" TIMESTAMPTZ(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMPTZ(6) NOT NULL,
-
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 

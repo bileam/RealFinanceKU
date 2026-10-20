@@ -1,253 +1,481 @@
-import { Filter } from "lucide-react";
 
+// from ai
 
-export default function Content(){
-    return(
-        <div className="flex flex-col gap-2 ">
-            
+"use client";
 
-            {/* filtering */}
-            <div className="flex gap-2 w-full  py-3">
-               
-<select
-  name="type"
-  id="type"
-  className="
-    w-full
-    sm:w-48
-    px-4
-    py-2.5
-    rounded-xl
-    bg-white
-    border border-gray-200
-    text-sm text-gray-700
-    shadow-sm
-ring ring-primary
-    transition-all
-    cursor-pointer
-    hover:border-gray-300
-    focus:border-blue-500
-    focus:ring-2
-    focus:ring-blue-100
-  "
->
-  <option value="">Semua Tipe</option>
-  <option value="income">Pemasukan</option>
-  <option value="expense">Pengeluaran</option>
-</select>
-               
-<select
-  name="type"
-  id="type"
-  className="
-    w-full
-    sm:w-48
-    px-4
-    py-2.5
-    rounded-xl
-    bg-white
-    border border-gray-200
-    text-sm text-gray-700
-    shadow-sm
-ring ring-primary
-    transition-all
-    cursor-pointer
-    hover:border-gray-300
-    focus:border-blue-500
-    focus:ring-2
-    focus:ring-blue-100
-  "
->
-  <option value="">Semua Kategori</option>
-  <option value="income">Pemasukan</option>
-  <option value="expense">Pengeluaran</option>
-</select>
+import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
-<select
-  name="type"
-  id="type"
-  className="
-    w-full
-    sm:w-100
-    px-4
-    py-2.5
-    rounded-xl
-    bg-white
-    border border-gray-200
-    text-sm text-gray-700
-    shadow-sm
-ring ring-primary
-    transition-all
-    cursor-pointer
-    hover:border-gray-300
-    focus:border-blue-500
-    focus:ring-2
-    focus:ring-blue-100
-  "
->
-  <option value="">05 Desember 2002 - 09 January 2003 </option>
-  <option value="income">Pemasukan</option>
-  <option value="expense">Pengeluaran</option>
-</select>
-<button className="px-2 py-2 shadow rounded-2xl bg-white"><Filter className="text-primary"/></button>
+const USER_ID = "de2ce9d4-a628-46a2-9784-48710c51f46f";
+const LIMIT = 5;
 
-               
-            </div>
-            {/* transaction list */}
-            <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
-  {/* Header */}
-  <div className="mb-5 flex items-center justify-between">
-    <h2 className="text-base font-bold text-slate-800">
-      Daftar Transaksi
-    </h2>
+type Transaction = {
+  id: string;
+  categoryId?: string;
+  category?: string;
+  type: string;
+  amount: number | string;
+  description: string | null;
+  transactionDate: string;
+  status: string;
+};
 
-    <button className="flex items-center gap-1 text-sm font-semibold text-indigo-600 transition hover:text-indigo-800">
-      Lihat Semua
-      <span>›</span>
-    </button>
-  </div>
+type ApiResponse = {
+  success: boolean;
+  message?: string;
+  count: number;
+  data: Transaction[];
+  pagination: {
+    currentpage: number;
+    limit: number;
+    totalData: number;
+    totalPage: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+};
 
-  {/* Table */}
-  <div className="overflow-x-auto">
-    <table className="w-full min-w-[800px] text-left text-sm">
-      <thead>
-        <tr className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
-          <th className="rounded-l-xl px-4 py-4">Tanggal</th>
-          <th className="px-4 py-4">Deskripsi</th>
-          <th className="px-4 py-4">Kategori</th>
-          <th className="px-4 py-4">Tipe</th>
-          <th className="px-4 py-4 text-right">Jumlah</th>
-          <th className="px-4 py-4 text-center">Status</th>
-          <th className="rounded-r-xl px-4 py-4 text-center">Aksi</th>
-        </tr>
-      </thead>
+type Filters = {
+  type: string;
+  categoryId: string;
+  startDate: string;
+  endDate: string;
+};
 
-      <tbody className="divide-y divide-slate-100">
-        {[
-          {
-            date: "03 Okt 2026",
-            name: "Gaji Bulanan",
-            category: "Gaji",
-            type: "Pemasukan",
-            amount: 5000000,
-          },
-          {
-            date: "02 Okt 2026",
-            name: "Belanja di Indomaret",
-            category: "Makanan",
-            type: "Pengeluaran",
-            amount: 85000,
-          },
-          {
-            date: "01 Okt 2026",
-            name: "Top Up E-wallet",
-            category: "Transfer",
-            type: "Transfer",
-            amount: 300000,
-          },
-          {
-            date: "30 Sep 2026",
-            name: "Tagihan Listrik",
-            category: "Tagihan",
-            type: "Pengeluaran",
-            amount: 250000,
-          },
-          {
-            date: "29 Sep 2026",
-            name: "Investasi Reksa Dana",
-            category: "Investasi",
-            type: "Pengeluaran",
-            amount: 500000,
-          },
-        ].map((item, index) => (
-          <tr
-            key={index}
-            className="transition-colors hover:bg-slate-50/80"
+const initialFilters: Filters = {
+  type: "",
+  categoryId: "",
+  startDate: "",
+  endDate: "",
+};
+
+const formatRupiah = (amount: number) =>
+  `Rp ${new Intl.NumberFormat("id-ID", {
+    maximumFractionDigits: 0,
+  }).format(amount)}`;
+
+const formatTanggal = (date: string) =>
+  new Date(date).toLocaleDateString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+export default function Content() {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalData, setTotalData] = useState(0);
+
+  // Filter yang sedang dipilih pengguna.
+  const [filters, setFilters] = useState<Filters>(initialFilters);
+
+  // Filter yang sudah diterapkan ke API.
+  const [appliedFilters, setAppliedFilters] =
+    useState<Filters>(initialFilters);
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Ambil transaksi setiap halaman atau filter berubah.
+  const fetchTransactions = useCallback(async (signal: AbortSignal) => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const params = new URLSearchParams({
+        idUser: USER_ID,
+        page: String(currentPage),
+        limit: String(LIMIT),
+      });
+
+      if (appliedFilters.type) {
+        params.set("type", appliedFilters.type);
+      }
+
+      if (appliedFilters.categoryId) {
+        params.set("categoryId", appliedFilters.categoryId);
+      }
+
+      if (appliedFilters.startDate) {
+        params.set("startDate", appliedFilters.startDate);
+      }
+
+      if (appliedFilters.endDate) {
+        params.set("endDate", appliedFilters.endDate);
+      }
+
+      const response = await fetch(
+        `/api/transaksi?${params.toString()}`,
+        { signal }
+      );
+
+      const result: ApiResponse = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(
+          result.message || "Gagal mengambil data transaksi"
+        );
+      }
+
+      setTransactions(result.data);
+      setTotalData(result.pagination.totalData);
+      setTotalPages(result.pagination.totalPage);
+    } catch (err) {
+      if (signal.aborted) {
+        return;
+      }
+
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Terjadi kesalahan saat mengambil data"
+      );
+    } finally {
+      if (!signal.aborted) {
+        setLoading(false);
+      }
+    }
+  }, [currentPage, appliedFilters]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    void Promise.resolve().then(() => fetchTransactions(controller.signal));
+
+    return () => controller.abort();
+  }, [fetchTransactions]);
+
+  // Daftar kategori berdasarkan data transaksi yang diterima.
+  // API perlu menyertakan categoryId dan nama kategori.
+  const categories = Array.from(
+    new Map(
+      transactions.flatMap((item) =>
+        item.categoryId && item.category
+          ? [[item.categoryId, item.category] as const]
+          : []
+      )
+    ),
+    ([id, name]) => ({ id, name })
+  );
+
+  // Terapkan filter dan kembali ke halaman pertama.
+  function applyFilters() {
+    setCurrentPage(1);
+    setAppliedFilters({ ...filters });
+  }
+
+  function resetFilters() {
+    setFilters(initialFilters);
+    setCurrentPage(1);
+    setAppliedFilters({ ...initialFilters });
+  }
+
+  const firstData =
+    totalData === 0 ? 0 : (currentPage - 1) * LIMIT + 1;
+
+  const lastData = Math.min(currentPage * LIMIT, totalData);
+
+  return (
+    <div className="flex flex-col gap-2">
+      {/* FILTER */}
+      <div className="flex w-full flex-col gap-3 py-3 sm:flex-row sm:flex-wrap">
+        {/* Filter tipe */}
+        <select
+          aria-label="Filter tipe transaksi"
+          value={filters.type}
+          onChange={(e) =>
+            setFilters({ ...filters, type: e.target.value })
+          }
+          className="w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm transition hover:border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 sm:w-48"
+        >
+          <option value="">Semua Tipe</option>
+          <option value="income">Pemasukan</option>
+          <option value="expense">Pengeluaran</option>
+        </select>
+
+        {/* Filter kategori */}
+        <select
+          aria-label="Filter kategori transaksi"
+          value={filters.categoryId}
+          onChange={(e) =>
+            setFilters({
+              ...filters,
+              categoryId: e.target.value,
+            })
+          }
+          className="w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm transition hover:border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 sm:w-48"
+        >
+          <option value="">Semua Kategori</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+        {/* Filter tanggal awal */}
+        <input
+          aria-label="Tanggal mulai"
+          type="date"
+          value={filters.startDate}
+          onChange={(e) =>
+            setFilters({
+              ...filters,
+              startDate: e.target.value,
+            })
+          }
+          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 sm:w-44"
+        />
+        {/* Filter tanggal akhir */}
+        <input
+          aria-label="Tanggal akhir"
+          type="date"
+          value={filters.endDate}
+          min={filters.startDate || undefined}
+          onChange={(e) =>
+            setFilters({
+              ...filters,
+              endDate: e.target.value,
+            })
+          }
+          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 sm:w-44"
+        />
+
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={applyFilters}
+            disabled={loading}
+            className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-50"
           >
-            <td className="whitespace-nowrap px-4 py-5 text-slate-500">
-              {item.date}
-            </td>
+            <Filter size={16} />
+            Filter
+          </button>
 
-            <td className="whitespace-nowrap px-4 py-5 font-semibold text-slate-700">
-              {item.name}
-            </td>
+          <button
+            type="button"
+            onClick={resetFilters}
+            className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
 
-            <td className="px-4 py-5 text-slate-600">
-              {item.category}
-            </td>
+      {/* DAFTAR TRANSAKSI */}
+      <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+        <div className="mb-5 flex items-center justify-between">
+          <div>
+            <h2 className="text-base font-bold text-slate-800">
+              Daftar Transaksi
+            </h2>
+            <p className="mt-1 text-sm text-slate-500">
+              Total {totalData} transaksi
+            </p>
+          </div>
+        </div>
 
-            <td className="px-4 py-5">
-              <span
-                className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
-                  item.type === "Pemasukan"
-                    ? "bg-emerald-50 text-emerald-600"
-                    : item.type === "Pengeluaran"
-                    ? "bg-rose-50 text-rose-600"
-                    : "bg-indigo-50 text-indigo-600"
+        <div
+          aria-busy={loading}
+          className="relative min-h-[360px] overflow-x-auto"
+        >
+          <table className="w-full min-w-[800px] text-left text-sm">
+            <thead>
+              <tr className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <th className="rounded-l-xl px-4 py-4">Tanggal</th>
+                <th className="px-4 py-4">Deskripsi</th>
+                <th className="px-4 py-4">Kategori</th>
+                <th className="px-4 py-4">Tipe</th>
+                <th className="px-4 py-4 text-right">Jumlah</th>
+                <th className="rounded-r-xl px-4 py-4 text-center">
+                  Status
+                </th>
+              </tr>
+            </thead>
+
+            <tbody className="divide-y divide-slate-100">
+              {loading ? (
+                Array.from({ length: LIMIT }, (_, rowIndex) => (
+                  <tr
+                    key={`loading-${rowIndex}`}
+                    aria-hidden="true"
+                    className="transaction-skeleton-row"
+                  >
+                    {[28, 36, 24, 20, 28, 18].map((width, columnIndex) => (
+                      <td
+                        key={columnIndex}
+                        className={`px-4 py-5 ${
+                          columnIndex === 4 ? "text-right" : ""
+                        } ${columnIndex === 5 ? "text-center" : ""}`}
+                      >
+                        <div
+                          className="transaction-skeleton-bar h-2 rounded-full"
+                          style={{
+                            width: `${width * (rowIndex % 2 === 0 ? 1 : 0.85)}%`,
+                            animationDelay: `${rowIndex * 80 + columnIndex * 35}ms`,
+                          }}
+                        />
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : error ? (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="px-4 py-12 text-center text-rose-600"
+                  >
+                    {error}
+                  </td>
+                </tr>
+              ) : transactions.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="px-4 py-12 text-center text-slate-500"
+                  >
+                    Tidak ada transaksi yang sesuai dengan filter.
+                  </td>
+                </tr>
+              ) : (
+                transactions.map((item) => (
+                  <tr
+                    key={item.id}
+                    className="transition-colors hover:bg-slate-50/80"
+                  >
+                    <td className="whitespace-nowrap px-4 py-5 text-slate-500">
+                      {formatTanggal(item.transactionDate)}
+                    </td>
+
+                    <td className="whitespace-nowrap px-4 py-5 font-semibold text-slate-700">
+                      {item.description || "Tanpa deskripsi"}
+                    </td>
+
+                    <td className="px-4 py-5 text-slate-600">
+                      {item.category || "—"}
+                    </td>
+
+                    <td className="px-4 py-5">
+                      <span
+                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
+                          item.type === "income"
+                            ? "bg-emerald-50 text-emerald-600"
+                            : "bg-rose-50 text-rose-600"
+                        }`}
+                      >
+                        {item.type === "income"
+                          ? "Pemasukan"
+                          : "Pengeluaran"}
+                      </span>
+                    </td>
+
+                    <td
+                      className={`whitespace-nowrap px-4 py-5 text-right font-semibold tabular-nums ${
+                        item.type === "income"
+                          ? "text-emerald-600"
+                          : "text-rose-600"
+                      }`}
+                    >
+                      {item.type === "income" ? "+" : "-"}
+                      {formatRupiah(Number(item.amount))}
+                    </td>
+
+                    <td className="px-4 py-5 text-center">
+                      <span
+                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                          item.status === "success"
+                            ? "bg-emerald-50 text-emerald-600"
+                            : "bg-amber-50 text-amber-600"
+                        }`}
+                      >
+                        {item.status === "success"
+                          ? "Berhasil"
+                          : item.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+          {error && transactions.length > 0 && !loading && (
+            <div
+              role="alert"
+              className="absolute inset-x-0 top-0 flex justify-center bg-white/90 px-4 py-3 text-sm text-rose-600"
+            >
+              {error}
+            </div>
+          )}
+        </div>
+
+        {/* FOOTER DAN PAGINATION */}
+        <div className="mt-5 flex flex-col gap-4 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs font-medium text-slate-500">
+            Menampilkan{" "}
+            <span className="font-semibold text-slate-700">
+              {firstData}–{lastData}
+            </span>{" "}
+            dari{" "}
+            <span className="font-semibold text-slate-700">
+              {totalData}
+            </span>{" "}
+            data
+          </p>
+
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <button
+              type="button"
+              aria-label="Halaman sebelumnya"
+              onClick={() =>
+                setCurrentPage((page) => Math.max(1, page - 1))
+              }
+              disabled={
+                loading || currentPage <= 1 || totalPages === 0
+              }
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronLeft size={17} />
+            </button>
+
+            {Array.from(
+              { length: totalPages },
+              (_, index) => index + 1
+            ).map((page) => (
+              <button
+                key={page}
+                type="button"
+                onClick={() => setCurrentPage(page)}
+                disabled={loading}
+                className={`h-9 min-w-9 rounded-lg px-3 text-sm font-semibold transition ${
+                  currentPage === page
+                    ? "bg-indigo-600 text-white shadow-sm shadow-indigo-200"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600"
                 }`}
               >
-                {item.type}
-              </span>
-            </td>
-
-            <td className="whitespace-nowrap px-4 py-5 text-right font-semibold tabular-nums text-slate-700">
-              Rp {item.amount.toLocaleString("id-ID")}
-            </td>
-
-            <td className="px-4 py-5 text-center">
-              <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-600">
-                Berhasil
-              </span>
-            </td>
-
-            <td className="px-4 py-5 text-center">
-              <button
-                aria-label={`Aksi ${item.name}`}
-                className="rounded-lg px-3 py-1 font-bold text-slate-400 transition hover:bg-indigo-50 hover:text-indigo-600"
-              >
-                ···
+                {page}
               </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+            ))}
 
-  {/* Footer & Pagination — tampilan saja */}
-  <div className="mt-5 flex flex-col gap-4 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-    <p className="text-xs font-medium text-slate-500">
-      Menampilkan <span className="font-semibold text-slate-700">1 - 5</span> dari{" "}
-      <span className="font-semibold text-slate-700">12</span> data
-    </p>
-
-    <div className="flex items-center justify-end gap-2">
-      <button
-        disabled
-        className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-400 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        ‹
-      </button>
-
-      {[1, 2, 3].map((page) => (
-        <button
-          key={page}
-          className={`h-9 w-9 rounded-lg text-sm font-semibold transition ${
-            page === 1
-              ? "bg-indigo-600 text-white shadow-sm shadow-indigo-200"
-              : "border border-slate-200 bg-white text-slate-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600"
-          }`}
-        >
-          {page}
-        </button>
-      ))}
-
-      <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50">
-        ›
-      </button>
+            <button
+              type="button"
+              aria-label="Halaman berikutnya"
+              onClick={() =>
+                setCurrentPage((page) =>
+                  Math.min(totalPages, page + 1)
+                )
+              }
+              disabled={
+                loading ||
+                currentPage >= totalPages ||
+                totalPages === 0
+              }
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronRight size={17} />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-</div>    
-</div>
-    )
-} 
+  );
+}

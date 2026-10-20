@@ -4,6 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request:NextRequest){
     try {
         const idUser = request.nextUrl.searchParams.get("idUser")
+        const page = Number(
+            request.nextUrl.searchParams.get("page") ?? 1
+        )
+        const limit = Number(
+            request.nextUrl.searchParams.get("limit")
+        )
         if(!idUser){
             return NextResponse.json({
                 success: false,
@@ -11,10 +17,31 @@ export async function GET(request:NextRequest){
             },
         {
             status:400
-        })
+        })}
 
-        }
-        const transactions = await prisma.transaction.findMany({
+          if(!Number.isInteger(page) || page < 1 || !Number.isInteger(limit) || limit < 0){
+            return NextResponse.json({
+                success: false,
+                message:"page dan limit harus berupa bilangan bulat positif"
+            },{
+                status:400
+            })}
+
+            if(limit> 100){
+                return NextResponse.json({
+                    success: false,
+                    message:"limit maksimal adalah 100"
+                },{
+                    status:400
+                })
+            }
+     // TAMBAHAN 4: Menghitung jumlah data yang dilewati.
+    // Halaman 1: skip = 0
+    // Halaman 2: skip = 5 jika limit = 5
+    // Halaman 3: skip = 10 jika limit = 5
+    const skip  = (page - 1) * limit
+
+    const transactions = await prisma.transaction.findMany({
             where:{
             userId:idUser
          },select:{
@@ -26,16 +53,38 @@ export async function GET(request:NextRequest){
             status:true,
             createdAt:true,
             updatedAt:true
-         },orderBy:{
-           transactionDate:"asc"}
+         },
+         orderBy: [
+            { transactionDate: "desc" },
+            { createdAt: "desc" },
+         ],
+         skip,
+         take: limit
         })
-      
+
+ // TAMBAHAN 7: Menghitung total seluruh transaksi milik user.
+    // Count tidak terpengaruh oleh skip dan take.
+      const totalData = await prisma.transaction.count({
+        where:{
+        userId: idUser
+       }
+      })
+
+     const totalPages = Math.ceil(totalData / limit);
+
         return NextResponse.json({
             success:true,
             count:transactions.length,
-            data:transactions
+            data:transactions,
+            pagination:{
+                currentpage : page,
+                limit :  limit,
+                totalData : totalData,
+                totalPage : totalPages,
+                hasNextPage: page < totalPages,
+                hasPreviousPage: page > 1,
+            }
         })
-
     } catch (error) {
         console.error("server sedang bermasalah",error)
         return NextResponse.json({
