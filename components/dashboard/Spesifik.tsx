@@ -89,38 +89,41 @@ export default function Spesifik() {
       id: "1",
       name: "pemasukan",
       judul: "Total Pemasukan",
-      icon: <MoveUp className="text-green-600" />,
+      icon: <MoveUp className="text-green-600 dark:text-emerald-300" />,
       color: "bg-green-600/20",
       colortext: "text-green-600",
+      darkColorText: "dark:text-emerald-300",
       persen: "20%",
     },
     {
       id: "2",
       name: "pengeluaran",
       judul: "Total Pengeluaran",
-      icon: <MoveDown className="text-red-600" />,
+      icon: <MoveDown className="text-red-600 dark:text-rose-300" />,
       color: "bg-red-600/20",
       colortext: "text-red-600",
+      darkColorText: "dark:text-rose-300",
       persen: "10%",
     },
     {
       id: "3",
       name: "jumlah_saldo",
       judul: "Saldo Saat Ini",
-      icon: <Wallet className="text-sky-600" />,
+      icon: <Wallet className="text-sky-600 dark:text-sky-300" />,
       color: "bg-sky-600/20",
       colortext: "text-sky-600",
+      darkColorText: "dark:text-sky-300",
       persen: "13%",
     },
   ];
-const loadingTrue = "bg-gray-200"
+const loadingTrue = "bg-gray-200 dark:bg-slate-700"
 
   if (loading) {
     return   <div className="grid grid-cols-1 gap-6 py-6 md:grid-cols-3 h-50">
     {items.map((item) => (
       <div
         key={item.id}
-        className="items-center rounded-lg bg-primary-light px-5 py-2 shadow shadow-primary/15 transition-all duration-500 hover:-translate-y-2"
+        className="items-center rounded-xl bg-primary-light px-5 py-2 shadow shadow-primary/15 transition-all duration-300 hover:-translate-y-1 dark:border dark:border-white/5 dark:bg-gradient-to-br dark:from-[#252741] dark:via-[#202238] dark:to-[#191b2a] dark:shadow-black/20"
       >
         <div className="flex items-center gap-3 py-2">
           <div className={`h-10 w-12 rounded-full p-2 ${loadingTrue}`}> 
@@ -157,11 +160,11 @@ const loadingTrue = "bg-gray-200"
 
   if (error) {
     return (
-      <div className="py-6">
+      <div className="py-6 text-slate-800 dark:text-slate-100">
         <p className="text-red-600">Error: {error}</p>
         <button
           onClick={getTransaction}
-          className="mt-2 rounded-lg bg-primary-dark px-3 py-2 text-primary-light"
+          className="mt-2 rounded-lg bg-primary-dark px-3 py-2 text-primary-light dark:bg-indigo-500"
         >
           Coba lagi
         </button>
@@ -174,7 +177,7 @@ const loadingTrue = "bg-gray-200"
       {items.map((item) => (
         <div
           key={item.id}
-          className="items-center rounded-lg bg-primary-light px-5 py-2 shadow shadow-primary/15 transition-all duration-500 hover:-translate-y-2"
+          className="items-center rounded-xl bg-primary-light px-5 py-2 shadow shadow-primary/15 transition-all duration-300 hover:-translate-y-1 dark:border dark:border-white/5 dark:bg-gradient-to-br dark:from-[#252741] dark:via-[#202238] dark:to-[#191b2a] dark:shadow-black/20"
         >
           <div className="flex items-center gap-3 py-2">
             <div className={`h-10 rounded-full p-2 ${item.color}`}>
@@ -183,22 +186,22 @@ const loadingTrue = "bg-gray-200"
             <div className="flex w-full flex-col gap-2">
               {item.id === "1" ? (
                 <div className="flex w-full justify-between">
-                  <p className="text-gray-400">{item.judul}</p>
+                  <p className="text-gray-500 dark:text-slate-400">{item.judul}</p>
 
-                  <select className="rounded-xl bg-primary-dark px-2 text-primary-light outline-none">
+                  <select className="rounded-xl bg-primary-dark px-2 text-primary-light outline-none dark:border dark:border-white/10 dark:bg-slate-900/80 dark:text-slate-200">
                     <option value="bulanan">Bulanan</option>
                     <option value="all">Semua</option>
                   </select>
                 </div>
               ) : (
-                <p className="text-gray-400">{item.judul}</p>
+                <p className="text-gray-500 dark:text-slate-400">{item.judul}</p>
               )}
 
-              <h2 className="text-2xl font-bold text-primary-dark">
+              <h2 className="text-2xl font-bold text-primary-dark dark:text-white">
                 {formatRupiah(getTotal(item.name))}
               </h2>
-              <p className="text-gray-400">
-                <span className={item.colortext}>
+              <p className="text-gray-400 dark:text-slate-400">
+                <span className={`${item.colortext} ${item.darkColorText}`}>
                   {item.persen}
                 </span>{" "}
                 dari tahun lalu

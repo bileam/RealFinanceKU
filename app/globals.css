@@ -3,6 +3,8 @@
 @import "tailwindcss";
 @plugin '@tailwindcss/forms';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   /* Brand */
   --primary: #5145cd;
@@ -35,6 +37,22 @@
 
   /* Radius */
   --radius-card: 16px;
+  --chart-text: #777da5;
+  --chart-grid: #e9eaf8;
+}
+
+html.dark {
+  color-scheme: dark;
+
+  --background: #11121b;
+  --surface: #1b1c29;
+  --surface-muted: #252638;
+  --foreground: #f4f3ff;
+  --text-secondary: #b7b8c8;
+  --text-muted: #8d90a5;
+  --border: #34364b;
+  --chart-text: #a5a9c2;
+  --chart-grid: #38394d;
 }
 
 @theme inline {
@@ -68,6 +86,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 @keyframes transaction-skeleton-shimmer {
@@ -101,6 +120,16 @@ body {
   );
   background-size: 200% 100%;
   animation: transaction-skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+html.dark .transaction-skeleton-bar {
+  background: linear-gradient(
+    90deg,
+    #303247 25%,
+    #41435a 50%,
+    #303247 75%
+  );
+  background-size: 200% 100%;
 }
 
 .transaction-skeleton-row {

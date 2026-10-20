@@ -4,6 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request:NextRequest){
     try {
         const idUser = request.nextUrl.searchParams.get("idUser")
+        const type = request.nextUrl.searchParams.get("type")
+        const categoryId = request.nextUrl.searchParams.get("categoryId")
+        const startDate = request.nextUrl.searchParams.get("startDate")
+        const endDate = request.nextUrl.searchParams.get("endDate")
         const page = Number(
             request.nextUrl.searchParams.get("page") ?? 1
         )
@@ -19,7 +23,7 @@ export async function GET(request:NextRequest){
             status:400
         })}
 
-          if(!Number.isInteger(page) || page < 1 || !Number.isInteger(limit) || limit < 0){
+          if(!Number.isInteger(page) || page < 1 || !Number.isInteger(limit) || limit < 1){
             return NextResponse.json({
                 success: false,
                 message:"page dan limit harus berupa bilangan bulat positif"
@@ -35,6 +39,60 @@ export async function GET(request:NextRequest){
                     status:400
                 })
             }
+            if(type && !["income", "expense"].includes(type)){
+                return NextResponse.json({
+                    success: false,
+                    message:"tipe harus income atau expense"
+                },{
+                    status:400
+                })
+            }
+
+            if(categoryId && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(categoryId)){
+                return NextResponse.json({
+                    success: false,
+                    message:"categoryId tidak valid"
+                },{
+                    status:400
+                })
+            }
+
+            const isValidDate = (value: string) =>
+                /^\d{4}-\d{2}-\d{2}$/.test(value) &&
+                !Number.isNaN(Date.parse(`${value}T00:00:00.000Z`)) &&
+                new Date(`${value}T00:00:00.000Z`).toISOString().slice(0, 10) === value
+
+            if((startDate && !isValidDate(startDate)) || (endDate && !isValidDate(endDate))){
+                return NextResponse.json({
+                    success: false,
+                    message:"format tanggal harus YYYY-MM-DD"
+                },{
+                    status:400
+                })
+            }
+
+            if(startDate && endDate && startDate > endDate){
+                return NextResponse.json({
+                    success: false,
+                    message:"tanggal mulai tidak boleh melewati tanggal akhir"
+                },{
+                    status:400
+                })
+            }
+
+            const where = {
+                userId: idUser,
+                ...(type ? { type } : {}),
+                ...(categoryId ? { categoryId } : {}),
+                ...(startDate || endDate
+                    ? {
+                        transactionDate: {
+                            ...(startDate ? { gte: new Date(`${startDate}T00:00:00.000Z`) } : {}),
+                            ...(endDate ? { lte: new Date(`${endDate}T00:00:00.000Z`) } : {}),
+                        },
+                    }
+                    : {}),
+            }
      // TAMBAHAN 4: Menghitung jumlah data yang dilewati.
     // Halaman 1: skip = 0
     // Halaman 2: skip = 5 jika limit = 5
@@ -42,9 +100,8 @@ export async function GET(request:NextRequest){
     const skip  = (page - 1) * limit
 
     const transactions = await prisma.transaction.findMany({
-            where:{
-            userId:idUser
-         },select:{
+            where,
+         select:{
             id:true,
             type:true,
             amount:true,
@@ -52,7 +109,14 @@ export async function GET(request:NextRequest){
             transactionDate:true,
             status:true,
             createdAt:true,
-            updatedAt:true
+            updatedAt:true,
+            category:{
+                select:{
+                    id:true,
+                    name:true,
+                    type:true
+                }
+            }
          },
          orderBy: [
             { transactionDate: "desc" },
@@ -65,9 +129,7 @@ export async function GET(request:NextRequest){
  // TAMBAHAN 7: Menghitung total seluruh transaksi milik user.
     // Count tidak terpengaruh oleh skip dan take.
       const totalData = await prisma.transaction.count({
-        where:{
-        userId: idUser
-       }
+        where
       })
 
      const totalPages = Math.ceil(totalData / limit);

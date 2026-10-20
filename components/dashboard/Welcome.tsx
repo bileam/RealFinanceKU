@@ -2,11 +2,11 @@ import {  MoveRight, Plus } from "lucide-react";
 
 export default function Welcome(){
     return(
-        <div className="border  rounded-2xl px-6 py-6 bg-primary text-white space-y-2 relative overflow-hidden">
+        <div className="relative space-y-2 overflow-hidden rounded-2xl border border-primary-dark/10 bg-primary px-6 py-6 text-white shadow-sm shadow-primary/20 transition-colors duration-300 dark:border-indigo-300/10 dark:bg-gradient-to-br dark:from-indigo-950 dark:via-[#242044] dark:to-slate-900 dark:shadow-black/20">
      <div className="flex justify-between items-center">
         <div><h2 className="text-5xl z-10 brightness-125">Hallo, Bileam</h2>
-           <p className="text-lg text-gray-300 z-10">Kelola Kuanganmu dengan lebih baik di sini</p></div>
-    <button className="flex gap-2 z-10 items-center py-2 px-4 hover:gap-4 transition-all duration-500 hover:translate-y-2 cursor-pointer hover:brightness-110 bg-primary-light/60 rounded-full text-primary">
+           <p className="z-10 text-lg text-gray-300 dark:text-slate-300">Kelola Kuanganmu dengan lebih baik di sini</p></div>
+    <button className="z-10 flex cursor-pointer items-center gap-2 rounded-full bg-primary-light/60 px-4 py-2 text-primary transition-all duration-500 hover:translate-y-2 hover:gap-4 hover:brightness-110 dark:bg-white/10 dark:text-indigo-100 dark:hover:bg-white/15">
             <span>Lihat ringkasan</span> 
             <MoveRight/>
             </button>

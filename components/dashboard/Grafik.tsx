@@ -48,9 +48,9 @@ export default function Grafik(){
 
     return(
         <div className="flex gap-4">
-            <div className="w-[60%] shadow shadow-primary/15 bg-primary-light px-4 py-2">
+            <div className="w-[60%] rounded-2xl border border-primary-dark/5 bg-primary-light px-4 py-3 shadow shadow-primary/15 transition-colors duration-300 dark:border-white/5 dark:bg-gradient-to-br dark:from-[#202238] dark:to-[#191b2a] dark:shadow-black/20">
                 <div className="flex justify-between w-full">
-                    <h3 className="text-primary-dark text-lg font-bold">Ringkasa Kuangan</h3>
+                    <h3 className="text-primary-dark text-lg font-bold dark:text-slate-100">Ringkasa Kuangan</h3>
                 </div>
                  <DashedLineChart/>
             </div>
@@ -58,27 +58,27 @@ export default function Grafik(){
                 <h2 className="text-primary-dark text-lg font-bold">Kategori Pengeluaran</h2>
                     <div className="mt-8"><PieChartWithCenterLabel/></div>
             </div> */}
-            <div className="flex-1 shadow shadow-primary/15 bg-primary-light ">
+            <div className="flex-1 rounded-2xl border border-primary-dark/5 bg-primary-light p-2 shadow shadow-primary/15 transition-colors duration-300 dark:border-white/5 dark:bg-gradient-to-br dark:from-[#202238] dark:to-[#191b2a] dark:shadow-black/20">
                 <div className="flex justify-between items-center">
-                    <span className="text-primary-dark px-2 py-2 text-lg font-bold">Aktivitas Terbaru</span>
-                    <button className="text-primary-dark hover:text-right hover:brightness-125 px-2 flex gap-2 items-center cursor-pointer "><span>view all</span><ChevronRight className="w-5 h-5"/></button>
+                    <span className="text-primary-dark px-2 py-2 text-lg font-bold dark:text-slate-100">Aktivitas Terbaru</span>
+                    <button className="text-primary-dark hover:text-right hover:brightness-125 px-2 flex gap-2 items-center cursor-pointer dark:text-indigo-300"><span>view all</span><ChevronRight className="w-5 h-5"/></button>
                 </div>
-                <div className="px-2 pt-4 space-y-4">
-                    <div className="flex justify-between items-center">
-                        <ClosedCaption className="w-10 h-10 p-2 rounded-full bg-green-600/20 text-green-500"/>
+                <div className="space-y-2 px-2 pb-2 pt-4">
+                    <div className="flex items-center justify-between rounded-xl px-2 py-3 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]">
+                        <ClosedCaption className="w-10 h-10 rounded-full bg-green-600/20 p-2 text-green-500 dark:bg-emerald-400/10 dark:text-emerald-300"/>
                         <div>
-                            <p className="text-md font-semibold ">gaji Bulanan</p>
-                            <span className="text-[12px]">Lorem ipsum</span>
+                            <p className="text-md font-semibold text-slate-800 dark:text-slate-100">gaji Bulanan</p>
+                            <span className="text-[12px] text-slate-500 dark:text-slate-400">Lorem ipsum</span>
                         </div>
-                        <p className="text-green-600">Rp.4,000,000</p>
+                        <p className="font-semibold text-green-600 dark:text-emerald-300">Rp.4,000,000</p>
                     </div>
-                    <div className="flex justify-between items-center">
-                        <ClosedCaption className="w-10 h-10 p-2 rounded-full bg-red-600/20 text-red-500"/>
+                    <div className="flex items-center justify-between rounded-xl px-2 py-3 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]">
+                        <ClosedCaption className="w-10 h-10 rounded-full bg-red-600/20 p-2 text-red-500 dark:bg-rose-400/10 dark:text-rose-300"/>
                         <div>
-                            <p className="text-md font-semibold ">Belanja Bulanan</p>
-                            <span className="text-[12px]">Lorem ipsum</span>
+                            <p className="text-md font-semibold text-slate-800 dark:text-slate-100">Belanja Bulanan</p>
+                            <span className="text-[12px] text-slate-500 dark:text-slate-400">Lorem ipsum</span>
                         </div>
-                        <p className="text-red-600">Rp.4,000,000</p>
+                        <p className="font-semibold text-red-600 dark:text-rose-300">Rp.4,000,000</p>
                     </div>
                 </div>
             </div>

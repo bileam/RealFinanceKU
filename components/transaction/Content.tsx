@@ -11,13 +11,22 @@ const LIMIT = 5;
 
 type Transaction = {
   id: string;
-  categoryId?: string;
-  category?: string;
+  category: {
+    id: string;
+    name: string;
+    type: string;
+  };
   type: string;
   amount: number | string;
   description: string | null;
   transactionDate: string;
   status: string;
+};
+
+type Category = {
+  id: string;
+  name: string;
+  type: string;
 };
 
 type ApiResponse = {
@@ -33,6 +42,12 @@ type ApiResponse = {
     hasNextPage: boolean;
     hasPreviousPage: boolean;
   };
+};
+
+type CategoriesResponse = {
+  success: boolean;
+  message?: string;
+  data: Category[];
 };
 
 type Filters = {
@@ -63,6 +78,7 @@ const formatTanggal = (date: string) =>
 
 export default function Content() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [totalData, setTotalData] = useState(0);
@@ -76,6 +92,38 @@ export default function Content() {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [categoryError, setCategoryError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function fetchCategories() {
+      try {
+        const response = await fetch("/api/categories", {
+          signal: controller.signal,
+        });
+        const result: CategoriesResponse = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Gagal mengambil kategori");
+        }
+
+        setCategories(result.data);
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          setCategoryError(
+            err instanceof Error
+              ? err.message
+              : "Terjadi kesalahan saat mengambil kategori"
+          );
+        }
+      }
+    }
+
+    void fetchCategories();
+
+    return () => controller.abort();
+  }, []);
 
   // Ambil transaksi setiap halaman atau filter berubah.
   const fetchTransactions = useCallback(async (signal: AbortSignal) => {
@@ -146,19 +194,6 @@ export default function Content() {
     return () => controller.abort();
   }, [fetchTransactions]);
 
-  // Daftar kategori berdasarkan data transaksi yang diterima.
-  // API perlu menyertakan categoryId dan nama kategori.
-  const categories = Array.from(
-    new Map(
-      transactions.flatMap((item) =>
-        item.categoryId && item.category
-          ? [[item.categoryId, item.category] as const]
-          : []
-      )
-    ),
-    ([id, name]) => ({ id, name })
-  );
-
   // Terapkan filter dan kembali ke halaman pertama.
   function applyFilters() {
     setCurrentPage(1);
@@ -187,7 +222,7 @@ export default function Content() {
           onChange={(e) =>
             setFilters({ ...filters, type: e.target.value })
           }
-          className="w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm transition hover:border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 sm:w-48"
+          className="w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm transition hover:border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-surface dark:text-slate-200 dark:hover:border-slate-600 sm:w-48"
         >
           <option value="">Semua Tipe</option>
           <option value="income">Pemasukan</option>
@@ -204,7 +239,7 @@ export default function Content() {
               categoryId: e.target.value,
             })
           }
-          className="w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm transition hover:border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 sm:w-48"
+          className="w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm transition hover:border-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-surface dark:text-slate-200 dark:hover:border-slate-600 sm:w-48"
         >
           <option value="">Semua Kategori</option>
           {categories.map((category) => (
@@ -224,7 +259,7 @@ export default function Content() {
               startDate: e.target.value,
             })
           }
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 sm:w-44"
+          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-surface dark:text-slate-200 sm:w-44"
         />
         {/* Filter tanggal akhir */}
         <input
@@ -238,7 +273,7 @@ export default function Content() {
               endDate: e.target.value,
             })
           }
-          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 sm:w-44"
+          className="w-full rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 dark:border-slate-700 dark:bg-surface dark:text-slate-200 sm:w-44"
         />
 
         <div className="flex gap-2">
@@ -255,21 +290,26 @@ export default function Content() {
           <button
             type="button"
             onClick={resetFilters}
-            className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+            className="rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-medium text-gray-600 transition hover:bg-gray-50 dark:border-slate-700 dark:bg-surface dark:text-slate-300 dark:hover:bg-slate-800"
           >
             Reset
           </button>
         </div>
       </div>
+      {categoryError && (
+        <p role="alert" className="text-sm text-rose-600">
+          {categoryError}
+        </p>
+      )}
 
       {/* DAFTAR TRANSAKSI */}
-      <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
+      <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-surface">
         <div className="mb-5 flex items-center justify-between">
           <div>
-            <h2 className="text-base font-bold text-slate-800">
+            <h2 className="text-base font-bold text-slate-800 dark:text-slate-100">
               Daftar Transaksi
             </h2>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
               Total {totalData} transaksi
             </p>
           </div>
@@ -281,7 +321,7 @@ export default function Content() {
         >
           <table className="w-full min-w-[800px] text-left text-sm">
             <thead>
-              <tr className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <tr className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:bg-slate-800 dark:text-slate-300">
                 <th className="rounded-l-xl px-4 py-4">Tanggal</th>
                 <th className="px-4 py-4">Deskripsi</th>
                 <th className="px-4 py-4">Kategori</th>
@@ -293,7 +333,7 @@ export default function Content() {
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {loading ? (
                 Array.from({ length: LIMIT }, (_, rowIndex) => (
                   <tr
@@ -332,7 +372,7 @@ export default function Content() {
                 <tr>
                   <td
                     colSpan={6}
-                    className="px-4 py-12 text-center text-slate-500"
+                    className="px-4 py-12 text-center text-slate-500 dark:text-slate-400"
                   >
                     Tidak ada transaksi yang sesuai dengan filter.
                   </td>
@@ -341,18 +381,18 @@ export default function Content() {
                 transactions.map((item) => (
                   <tr
                     key={item.id}
-                    className="transition-colors hover:bg-slate-50/80"
+                    className="transition-colors hover:bg-slate-50/80 dark:hover:bg-slate-800/60"
                   >
-                    <td className="whitespace-nowrap px-4 py-5 text-slate-500">
+                    <td className="whitespace-nowrap px-4 py-5 text-slate-500 dark:text-slate-400">
                       {formatTanggal(item.transactionDate)}
                     </td>
 
-                    <td className="whitespace-nowrap px-4 py-5 font-semibold text-slate-700">
+                    <td className="whitespace-nowrap px-4 py-5 font-semibold text-slate-700 dark:text-slate-200">
                       {item.description || "Tanpa deskripsi"}
                     </td>
 
-                    <td className="px-4 py-5 text-slate-600">
-                      {item.category || "—"}
+                    <td className="px-4 py-5 text-slate-600 dark:text-slate-300">
+                      {item.category?.name || "—"}
                     </td>
 
                     <td className="px-4 py-5">
@@ -401,7 +441,7 @@ export default function Content() {
           {error && transactions.length > 0 && !loading && (
             <div
               role="alert"
-              className="absolute inset-x-0 top-0 flex justify-center bg-white/90 px-4 py-3 text-sm text-rose-600"
+              className="absolute inset-x-0 top-0 flex justify-center bg-white/90 px-4 py-3 text-sm text-rose-600 dark:bg-surface/90"
             >
               {error}
             </div>
@@ -409,14 +449,14 @@ export default function Content() {
         </div>
 
         {/* FOOTER DAN PAGINATION */}
-        <div className="mt-5 flex flex-col gap-4 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs font-medium text-slate-500">
+        <div className="mt-5 flex flex-col gap-4 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
+          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
             Menampilkan{" "}
-            <span className="font-semibold text-slate-700">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">
               {firstData}–{lastData}
             </span>{" "}
             dari{" "}
-            <span className="font-semibold text-slate-700">
+            <span className="font-semibold text-slate-700 dark:text-slate-200">
               {totalData}
             </span>{" "}
             data
@@ -432,7 +472,7 @@ export default function Content() {
               disabled={
                 loading || currentPage <= 1 || totalPages === 0
               }
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-500 dark:hover:bg-slate-800"
             >
               <ChevronLeft size={17} />
             </button>
@@ -449,7 +489,7 @@ export default function Content() {
                 className={`h-9 min-w-9 rounded-lg px-3 text-sm font-semibold transition ${
                   currentPage === page
                     ? "bg-indigo-600 text-white shadow-sm shadow-indigo-200"
-                    : "border border-slate-200 bg-white text-slate-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600"
+                    : "border border-slate-200 bg-white text-slate-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-700 dark:bg-surface dark:text-slate-300 dark:hover:border-indigo-500 dark:hover:bg-slate-800 dark:hover:text-indigo-300"
                 }`}
               >
                 {page}
@@ -469,7 +509,7 @@ export default function Content() {
                 currentPage >= totalPages ||
                 totalPages === 0
               }
-              className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-500 dark:hover:bg-slate-800"
             >
               <ChevronRight size={17} />
             </button>

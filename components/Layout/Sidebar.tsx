@@ -46,13 +46,13 @@ export default function Sidebar() {
   ];
 
   return (
-    <div className=" h-full flex-col justify-between px-4 relative flex">
+    <div className="relative flex h-full flex-col justify-between px-4">
       <div className="flex flex-col gap-20 z-20 relative">
         <div className="flex gap-1 items-center justify-center mt-2">
             <BadgeDollarSign className="w-10 text-sky-400"/>
             <div className="">
                 <h2 className="-mb-3 text-2xl" >Finance<span className="font-sans text-2xl">Ku</span></h2>
-                <span className="text-[10px] text-gray-300  inline-block">personal finance manajement</span>
+                <span className="inline-block text-[10px] text-gray-300 dark:text-slate-400">personal finance manajement</span>
             </div>
         </div>
         <div className="flex flex-col gap-6 relative">
@@ -63,10 +63,10 @@ export default function Sidebar() {
               <Link
                 key={item.path}
                 href={item.path}
-             className={`flex gap-6 duration-300 rounded-lg px-6 py-3 transition-colors ${
+             className={`flex gap-6 rounded-lg px-6 py-3 transition-colors duration-300 ${
         isActive
-          ? " bg-[#F0EEFF]/20"
-          : "hover:bg-[#F0EEFF]/10 hover:text-white"
+          ? "bg-[#F0EEFF]/20 text-white shadow-sm shadow-indigo-950/10 dark:bg-indigo-400/15 dark:text-indigo-100"
+          : "text-white/80 hover:bg-[#F0EEFF]/10 hover:text-white dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white"
       }`}
               >
                 {item.icon}
@@ -77,7 +77,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <button className="mb-5 z-20 flex gap-5 px-6 py-3 hover:bg-[#F0EEFF]/20 rounded-lg transition-all duration-200 cursor-pointer text-gray-200 hover:text-white hover:">
+      <button className="z-20 mb-5 flex cursor-pointer gap-5 rounded-lg px-6 py-3 text-gray-200 transition-all duration-200 hover:bg-[#F0EEFF]/20 hover:text-white dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white">
         <LogOut />
         <span>Logout</span>
       </button>

@@ -2,29 +2,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
-  
+export async function GET(){
   try {
-    const categories = await prisma.category.findMany({
-      orderBy: {
-        name: "asc",
-      },
-    });
+    const response = await prisma.category.findMany({
+    select:{
+      id:true,
+      name:true,
+      type:true,
+      icon:true,
+      color:true,
+      createdAt:true,
+      updatedAt:true
+    }
+    })
+
     return NextResponse.json({
       success: true,
-      data: categories,
-    });
+      count: response.length,
+      data : response
+    })
   } catch (error) {
-    console.error("Gagal mengambil kategori:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Gagal mengambil data kategori",
-      },
-      { status: 500 }
-    );
+    console.error("terjadi eror pada server",error)
+    NextResponse.json({
+      success:false,
+      message:"tidak tidak berhasil diambil"
+    },{status:400})
   }
 }
+
+
 
 
 export async function POST(request:NextRequest){

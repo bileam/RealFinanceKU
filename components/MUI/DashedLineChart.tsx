@@ -115,7 +115,7 @@ export default function DashedLineChart() {
               index === xLabels.length - 1,
             tickLabelStyle: {
               fontSize: 11,
-              fill: "#777DA5",
+              fill: "var(--chart-text)",
             },
           },
         ]}
@@ -128,7 +128,7 @@ export default function DashedLineChart() {
             valueFormatter: (value: number) => formatRupiah(value),
             tickLabelStyle: {
               fontSize: 11,
-              fill: "#777DA5",
+              fill: "var(--chart-text)",
             },
           },
         ]}
@@ -138,12 +138,16 @@ export default function DashedLineChart() {
         }}
         sx={{
           "& .MuiChartsGrid-line": {
-            stroke: "#E9EAF8",
+            stroke: "var(--chart-grid)",
             strokeOpacity: 0.85,
           },
 
           "& .MuiChartsAxis-line": {
-            stroke: "#E9EAF8",
+            stroke: "var(--chart-grid)",
+          },
+
+          "& .MuiChartsLegend-label": {
+            fill: "var(--chart-text)",
           },
 
           "& .MuiChartsAxis-tick": {

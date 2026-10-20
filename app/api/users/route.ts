@@ -1,37 +1,67 @@
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function Get(request:NextRequest){
+
+export async function GET(){
     try {
-        const UserId = request.nextUrl.searchParams.get("UserId")
-        if(!UserId){
-            return NextResponse.json({
-              success: false,
-               message: "anda tidak memiliki user id"
-            },{
-                status:400
-            })
-        }
-        const users = await prisma.user.findMany({
-            where:{
-                id:UserId
+        const response = await prisma.user.findMany({
+            select:{
+                name:true,
+                email:true
             },orderBy:{
-                name:"asc"
+                name:"desc"
             }
         })
-        console.log(users)
-        // return NextResponse.json({
-        //     success : true,
-        //     jumlahData : users.length,
-        //     data : users
-        // })
-    } catch (error) {
-        console.error("kesalahan dari pihak server",error)
+
         return NextResponse.json({
-            success: false,
+            success:true,
+            count:response.length,
+            data:response
+        })
+    } catch (error) {
+        console.error("terjadi kesalahan pada server",error)
+        NextResponse.json({
+            success:false,
             message:"data tidak dapat diambil"
-        },
-        {status:500}
-    )
+        },{status:400})
     }
+}
+
+
+export async function POST(request:NextResponse){
+try {
+    const body = await request.json()
+    const {name,email,password,avatar} = body
+    console.log("data anda adalah")
+    
+    if(!name || !email || !password ){
+        return NextResponse.json({
+            success:false,
+            message: "semua data harus diisi"
+
+        },{status:400})
+    } 
+
+
+   const  UserBody = await prisma.user.create(
+        {
+            data:{
+                name,
+                email,
+                password,
+                avatar: avatar  || null
+            }
+        }
+    )
+   return NextResponse.json({
+    success:true,
+    data:UserBody
+   })
+} catch (error) {
+ console.error("terjadi kesalahan pada sisi server",error)
+ return NextResponse.json({
+    success: false,
+    message:"terjadi kesalahan saat mengambil data anda"
+ },{status:500})   
+}
 }
