@@ -87,7 +87,7 @@ export default function Sidebar() {
       <div className="absolute z-0 h-10 w-10 rounded-full bg-primary-light/5 top-15 left-30"></div>
       <div className="absolute z-0 h-10 w-10 rounded-full bg-primary-light/5 top-20 left-30"></div>
   <div className="absolute z-0 h-50 w-50 rounded-full bg-primary-light/10 -bottom-10 -right-25"></div>
-  <div className="absolute z-0 h-50 w-50 rounded-full border border-primary-light/10 -bottom-10 -right-10"></div>
+  <div className="absolute z-0 h-50 w-50 rounded-full border border-primary-light/10 -bottom-10 -right-10 "></div>
   <div className="absolute z-0 h-20 w-20 rounded-full bg-primary-light/10 bottom-50 -left-15"></div>
   <div className="absolute z-0 h-20 w-20 rounded-full border border-primary-light/10 bottom-40 -left-15"></div>
     </div>
