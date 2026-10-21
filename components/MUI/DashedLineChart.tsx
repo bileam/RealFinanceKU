@@ -102,6 +102,7 @@ export default function DashedLineChart() {
             label: "Pengeluaran",
             id: "expense",
             color: "#EF4444",
+            
             valueFormatter: (value) =>
               formatRupiah(value ?? 0),
           },
@@ -147,7 +148,7 @@ export default function DashedLineChart() {
           },
 
           "& .MuiChartsLegend-label": {
-            fill: "var(--chart-text)",
+            color: "var(--chart-text)",
           },
 
           "& .MuiChartsAxis-tick": {

@@ -2,34 +2,48 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(){
+export async function GET(request:NextRequest){
   try {
-    const response = await prisma.category.findMany({
-    select:{
-      id:true,
-      name:true,
-      type:true,
-      icon:true,
-      color:true,
-      createdAt:true,
-      updatedAt:true
+    const type = await request.nextUrl.searchParams.get("type") ?? "all"
+    if(!["all","income","expense"].includes(type)){
+      return NextResponse.json({
+        success: false,
+        message:"filter categori tidak sesuai"
+      },{status:400})
     }
+    const response = await prisma.category.findMany({
+      select:{
+        id:true,
+        name:true,
+        type:true,
+        createdAt:true,
+        updatedAt:true
+      }
     })
 
-    return NextResponse.json({
-      success: true,
-      count: response.length,
-      data : response
+
+const totalIncome = response.filter((item)=>item.type === "income").length
+const totalexpense = response.filter((item)=>item.type === "expense").length
+
+
+const filterData = type === 'all'?response:response.filter((item)=>item.type === type)
+
+
+   return NextResponse.json({
+      success:true,
+      countData : response.length,
+      countIncome: totalIncome,
+      countexpense : totalexpense,
+      data:filterData
     })
   } catch (error) {
-    console.error("terjadi eror pada server",error)
-    NextResponse.json({
+    console.error("terjadi masalah pada server",error)
+   return NextResponse.json({
       success:false,
-      message:"tidak tidak berhasil diambil"
+      message:"gagal mengambil data"
     },{status:400})
   }
 }
-
 
 
 
