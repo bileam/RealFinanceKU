@@ -4,7 +4,18 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(request:NextRequest){
   try {
+     const iduser = await request.nextUrl.searchParams.get("idUser")
     const type = await request.nextUrl.searchParams.get("type") ?? "all"
+
+    if(!iduser){
+      return NextResponse.json({
+        success:false,
+        message:"Anda tidak memiliki user Id"
+      },{
+        status:400
+      })
+    }
+
     if(!["all","income","expense"].includes(type)){
       return NextResponse.json({
         success: false,
@@ -12,6 +23,9 @@ export async function GET(request:NextRequest){
       },{status:400})
     }
     const response = await prisma.category.findMany({
+      where:{
+      userId : iduser
+      },
       select:{
         id:true,
         name:true,

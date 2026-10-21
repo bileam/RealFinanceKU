@@ -8,7 +8,6 @@ datasource db {
   provider = "postgresql"
 }
 
-
 model User {
   id           String        @id @default(uuid()) @db.Uuid
   name         String        @db.VarChar(100)
@@ -17,30 +16,28 @@ model User {
   avatar       String?       @db.VarChar(255)
   createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+
   transactions Transaction[]
   plans        Plan[]
-  categories Category[]
+  categories   Category[]
 
   @@map("users")
 }
-
 model Category {
-  id                String             @id @default(uuid()) @db.Uuid
-  userId            String             @map("user_id") @db.Uuid
-  name              String             @db.VarChar(100)
-  type              String             @db.VarChar(20)
-  icon              String?            @db.VarChar(50)
-  color             String?            @db.VarChar(20)
-  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt         DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  id               String             @id @default(uuid()) @db.Uuid
+  userId           String?            @map("user_id") @db.Uuid
+  name             String             @db.VarChar(100)
+  type             String             @db.VarChar(20)
+  icon             String?            @db.VarChar(50)
+  color            String?            @db.VarChar(20)
+  createdAt        DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
 
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user             User?              @relation(fields: [userId], references: [id], onDelete: Restrict)
+  transactions     Transaction[]
+  planTransactions PlanTransaction[]
 
-  transactions      Transaction[]
-  planTransactions  PlanTransaction[]
-
-  
-
+  @@index([userId])
   @@map("categories")
 }
 

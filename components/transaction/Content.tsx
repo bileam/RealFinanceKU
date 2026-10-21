@@ -99,7 +99,7 @@ export default function Content() {
 
     async function fetchCategories() {
       try {
-        const response = await fetch("/api/categories", {
+        const response = await fetch(`http://localhost:3000/api/categories?idUser=${USER_ID}&type=all`, {
           signal: controller.signal,
         });
         const result: CategoriesResponse = await response.json();
