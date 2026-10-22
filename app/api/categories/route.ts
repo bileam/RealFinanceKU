@@ -49,7 +49,7 @@ const filterData = type === 'all'?response:response.filter((item)=>item.type ===
       countIncome: totalIncome,
       countexpense : totalexpense,
       data:filterData
-    })
+    }) 
   } catch (error) {
     console.error("terjadi masalah pada server",error)
    return NextResponse.json({

@@ -41,6 +41,12 @@ export default function Categories(){
 const [loading,setLoading] = useState(true)
 const [error,setError] = useState("")
 
+const [currentTime, setCurrentTime] = useState<number | null>(null);
+
+useEffect(() => {
+    // Menghitung waktu hanya di sisi client
+    setCurrentTime(Date.now());
+  }, []);
 
     useEffect(()=>{
             const controller = new AbortController();
@@ -48,8 +54,6 @@ const [error,setError] = useState("")
             try {
                 setLoading(true)
                 setError("")
-
-                
                 const params = new URLSearchParams({
                     idUser,type:filterType
                 })
@@ -61,8 +65,8 @@ const [error,setError] = useState("")
                 setDataCategori(result.data)  
                 setsummary({
                      countData: result.countData,
-          countIncome: result.countIncome,
-          countExpense: result.countexpense,
+                     countIncome: result.countIncome,
+                     countExpense: result.countexpense,
                 })   
           
                
@@ -87,9 +91,10 @@ if (!controller.signal.aborted) {
     },[idUser,filterType])
     
 
-    console.log(dataCategori)
+    // console.log(dataCategori)
     return(
         <div className="flex flex-col gap-5">
+                  {/* <p>Waktu Saat Ini: {currentTime ? new Date(currentTime).toLocaleString() : "Memuat..."}</p> */}
             <div className="flex gap-4">
                 <Cart/>
                 <Cart/>
