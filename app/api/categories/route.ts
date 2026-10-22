@@ -1,16 +1,20 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getAuthenticatedUser } from "@/lib/Auth";
 
 export async function GET(request:NextRequest){
   try {
-     const iduser = await request.nextUrl.searchParams.get("idUser")
+    //  const iduser = await request.nextUrl.searchParams.get("idUser")
     const type = await request.nextUrl.searchParams.get("type") ?? "all"
 
-    if(!iduser){
+    const AuthUser = await getAuthenticatedUser()
+
+
+    if(!AuthUser){
       return NextResponse.json({
         success:false,
-        message:"Anda tidak memiliki user Id"
+        message:"silakan anda login terlebih dahulu"
       },{
         status:400
       })
@@ -24,7 +28,7 @@ export async function GET(request:NextRequest){
     }
     const response = await prisma.category.findMany({
       where:{
-      userId : iduser
+      userId : AuthUser.id
       },
       select:{
         id:true,
