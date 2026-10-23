@@ -7,10 +7,7 @@ export async function GET(request:NextRequest){
   try {
     //  const iduser = await request.nextUrl.searchParams.get("idUser")
     const type = await request.nextUrl.searchParams.get("type") ?? "all"
-
     const AuthUser = await getAuthenticatedUser()
-
-
     if(!AuthUser){
       return NextResponse.json({
         success:false,
@@ -19,7 +16,6 @@ export async function GET(request:NextRequest){
         status:400
       })
     }
-
     if(!["all","income","expense"].includes(type)){
       return NextResponse.json({
         success: false,
@@ -39,13 +35,10 @@ export async function GET(request:NextRequest){
       }
     })
 
+    const totalIncome = response.filter((item)=>item.type === "income").length
+    const totalexpense = response.filter((item)=>item.type === "expense").length
 
-const totalIncome = response.filter((item)=>item.type === "income").length
-const totalexpense = response.filter((item)=>item.type === "expense").length
-
-
-const filterData = type === 'all'?response:response.filter((item)=>item.type === type)
-
+    const filterData = type === 'all'?response:response.filter((item)=>item.type === type)
 
    return NextResponse.json({
       success:true,
@@ -62,9 +55,6 @@ const filterData = type === 'all'?response:response.filter((item)=>item.type ===
     },{status:400})
   }
 }
-
-
-
 export async function POST(request:NextRequest){
 try {
     const body = await request.json()
@@ -75,18 +65,16 @@ try {
             success : false,
             message:"nama dan tipe categori wajib di isi"
         },{status:400})
-    }
-    
+    }  
     if(!["income","expense"].includes(type)){
         return NextResponse.json(
             { success: false, message: "Tipe harus income atau expense" },
             { status: 400 }
           );
-    }
-    
+    } 
     const  categories = await prisma.category.create(
         {
-            data:{
+         data:{
                 name,
                 type,
                 icon: icon || null,
@@ -98,7 +86,6 @@ try {
         { success: true, data: categories },
         { status: 201 }
       );
-
 } catch (error) {
     console.error("Gagal menambahkan kategori:", error);
     return NextResponse.json(

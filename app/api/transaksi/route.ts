@@ -1,9 +1,13 @@
+import { getAuthenticatedUser } from "@/lib/Auth";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request:NextRequest){
     try {
-        const idUser = request.nextUrl.searchParams.get("idUser")
+        // const idUser = request.nextUrl.searchParams.get("idUser")
+        const idUser = await getAuthenticatedUser()
+        // console.log(idUser)
+        
         const type = request.nextUrl.searchParams.get("type")
         const categoryId = request.nextUrl.searchParams.get("categoryId")
         const startDate = request.nextUrl.searchParams.get("startDate")
@@ -81,7 +85,7 @@ export async function GET(request:NextRequest){
             }
 
             const where = {
-                userId: idUser,
+                userId: idUser.id,
                 ...(type ? { type } : {}),
                 ...(categoryId ? { categoryId } : {}),
                 ...(startDate || endDate
@@ -103,6 +107,7 @@ export async function GET(request:NextRequest){
             where,
          select:{
             id:true,
+            userId : true,
             type:true,
             amount:true,
             description:true,
@@ -110,6 +115,11 @@ export async function GET(request:NextRequest){
             status:true,
             createdAt:true,
             updatedAt:true,
+            user:{
+    select:{
+        name:true
+    }
+            },
             category:{
                 select:{
                     id:true,
