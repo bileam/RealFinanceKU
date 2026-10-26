@@ -45,7 +45,7 @@ const [currentTime, setCurrentTime] = useState<number | null>(null);
 
 useEffect(() => {
     // Menghitung waktu hanya di sisi client
-    setCurrentTime(Date.now());
+    // setCurrentTime(Date.now());
   }, []);
 
     useEffect(()=>{

@@ -1,9 +1,103 @@
-import { BadgeDollarSign } from "lucide-react";
+"use client"
+import { BadgeDollarSign, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
-export default function login(){
+
+export default function Login(){
+    const Router = useRouter()
+    const [email,setEmail] = useState("")
+    const [password,setPassword] = useState("")
+    const [loading,setLoading] = useState(false)
+    const [hide,setHide] = useState(true)
+
+
+    function Validasi(){
+        
+        const cleanEmail = email.trim()
+        // memerikasa apakah email kosong,
+        if(cleanEmail === ""){
+            toast.error("Email wajib diisi")
+    return false
+        }
+
+        // mengecek format email
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if(!emailPattern.test(cleanEmail)){
+toast.error("format email tidak valid")
+return false
+        }
+
+        // memerikasa apakah password kosong
+if(password === ""){
+    toast.error("passord wajib diisi")
+    return false
+
+}
+   if(password.length <= 4 )
+  {
+    toast.error("minimal 4 karakter")
+    return 
+   } 
+return true
+    }
+
+
+  async  function handleSubmit(e: React.FormEvent<HTMLFormElement>){
+        e.preventDefault()
+
+        if(!Validasi()){
+            return
+        }
+        
+    try {
+        // menandai loading
+setLoading(true)
+
+        // mengirim  email dan password ke api
+const response = await fetch("http://localhost:3000/api/login",{
+    method:"POST",
+    headers:{
+        "Content-Type" : "application/json"
+    },
+    body: JSON.stringify({
+        email: email.trim(),
+        password
+    })
+})
+
+        // mengambil response api await response.json()
+const result = await response.json()
+        //  jika api gagal kembalikan !response.ok atau result.success = false
+        console.log("ini adalah response",response)
+        console.log("ini adalah result",result)
+if(!response.ok || result.status === false){
+    return toast.error("akun anda tidak valid")
+}
+        // jika login berhasil berikan toast
+        toast.success("login berhasil")
+
+        // jika berhasil redirect ke dashboard router.push("/dashboard") 
+        Router.push("/dashboard")
+    } catch (error) {
+        console.error("terjadi kesalahan",error)
+        toast.error("Terjadi kesalahan silakan coba lagi")
+        
+    }finally{
+        setLoading(false)
+    }
+
+
+
+
+        // console.log("ini adalah email: ",email)
+        // console.log("ini adalah password : ",password)
+    }
+
     return(
-        <div className="w-full h-screen md:flex">
+        <div className="w-full h-screen md:flex overflow-hidden">
   
     <div  className="md:w-[40%] relative bg-primary justify-center p-6 text-white flex flex-col items-center ">
       <div className="flex gap-2 items-center  w-135 mt-5">
@@ -30,17 +124,25 @@ export default function login(){
         <h1 className="text-[30px] font-semibold">Selamat Datang Kembali</h1>
         <p>Masuk ke akun financeku</p>
         </div>
-        <form className="flex flex-col gap-5" action="">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-5" action="">
             <div className="flex flex-col gap-2 ">
                 <label htmlFor="" className="font-semibold text-[16px]">Email</label>
-                <input className="w-full rounded-2xl   py-3 px-4" type="text" name="" id="" placeholder="Masukkan email anda" />
+                <input onChange={(e)=> setEmail(e.target.value)}  className="w-full rounded-2xl   py-3 px-4" type="text" name="email" value={email} id="" placeholder="Masukkan email anda" />
             </div>
-            <div className="flex flex-col gap-2  w-full ">
+            <div className="flex flex-col gap-2  w-full  ">
                 <label className="font-semibold text-[16px]" htmlFor="">Password</label>
-                <input className="w-full rounded-2xl   py-3 px-4" type="Password" name="" id="" placeholder="Masukkan password anda" />
+                <div className="relative overflow-hidden">
+                    {
+                        hide === true ?( <EyeOff onClick={()=>setHide(false)}  className="absolute w-5 h-5 right-4 bottom-4 z-20 cursor-pointer"/> ):(<Eye onClick={()=>setHide(true)} className="absolute w-5 h-5 right-4 bottom-4 z-20 cursor-pointer"/>)
+                    }
+                    
+                     {/* <EyeOff onClick={()=>setHide(false)}  className="absolute w-5 h-5 right-4 bottom-4 z-20 cursor-pointer"/> */}
+                <input onChange={e=>setPassword(e.target.value)} className="w-full rounded-2xl   py-3 px-5" type={hide?"password":"text"} name="password" value={password} id="" placeholder="Masukkan password anda" />
+                </div>
+               
             </div>
             <div className="flex justify-center">
-<button className="px-4 py-3 bg-primary w-full rounded-xl text-white hover:cursor-pointer hover:brightness-120">Masuk</button>
+<button type="submit" className="px-4 py-3 bg-primary w-full rounded-xl text-white hover:cursor-pointer hover:brightness-120">Masuk</button>
             </div>
         </form>
         <div className="flex flex-col items-center">

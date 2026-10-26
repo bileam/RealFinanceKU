@@ -19,7 +19,7 @@ export async function GET(){
             data:user
         },{status:200})
     } catch (error) {
-        console.error("terjadi kesalah pada sisi server")
+        console.error("terjadi kesalah pada sisi server",error)
         return NextResponse.json({
             success:false,
             message:"terjadi kesalahan pada server"

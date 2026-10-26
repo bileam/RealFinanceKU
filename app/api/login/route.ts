@@ -101,7 +101,7 @@ export async function POST(request:NextRequest){
 
 
     // Membuat respons sukses yang hanya berisi informasi user aman.
-    // Password dan token session tidak dimasukkan ke dalam JSON.
+    // Password dan token session tidak dimasukkan  ke dalam JSON.
     const response = NextResponse.json(
       {
         success: true,
