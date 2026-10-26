@@ -1,17 +1,19 @@
 
+import { getAuthenticatedUser } from "@/lib/Auth";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
     // 1. Mengambil idUser dari query parameter URL
-    const idUser = request.nextUrl.searchParams.get("idUser");
+    // const idUser = request.nextUrl.searchParams.get("idUser");
+    const idUser = await getAuthenticatedUser();
     // 2. Validasi: pastikan idUser dikirim
     if (!idUser) {
       return NextResponse.json(
         {
           success: false,
-          message: "idUser wajib diisi",
+          message:"anda belum login atau session anda telah berakhir"
         },
         { status: 400 }
       );
@@ -19,7 +21,7 @@ export async function GET(request: NextRequest) {
     // 3. Menghitung total pemasukan pengguna
     const incomeResult = await prisma.transaction.aggregate({
       where: {
-        userId: idUser,
+        userId: idUser.id,
         type: "income",
         status: "success",
       },
@@ -31,7 +33,7 @@ export async function GET(request: NextRequest) {
     // 4. Menghitung total pengeluaran pengguna
     const expenseResult = await prisma.transaction.aggregate({
       where: {
-        userId: idUser,
+        userId: idUser.id,
         type: "expense",
         status: "success",
       },
@@ -48,7 +50,7 @@ export async function GET(request: NextRequest) {
     // 6. Menghitung saldo
     const saldo = pemasukan - pengeluaran;
     // 7. Mengirim respons ke frontend
-    const id = 1
+
     return NextResponse.json({
       success: true,
       data: [

@@ -161,7 +161,7 @@ const loadingTrue = "bg-gray-200 dark:bg-slate-700"
   if (error) {
     return (
       <div className="py-6 text-slate-800 dark:text-slate-100">
-        <p className="text-red-600">Error: {error}</p>
+        <p className="text-red-600">{error}</p>
         <button
           onClick={getTransaction}
           className="mt-2 rounded-lg bg-primary-dark px-3 py-2 text-primary-light dark:bg-indigo-500"

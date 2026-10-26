@@ -10,25 +10,19 @@ function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
-// memeriksa apakah user login dengan token yang valid
+//memeriksa apakah user login dengan token yang valid
 export async function getAuthenticatedUser(){
-     // Mengambil cookie dari request yang sedang diproses.
-     const cookieStore = await cookies();
-
-
-    // Membaca token session dari cookie.
+//Mengambil cookie dari request yang sedang diproses.
+  const cookieStore = await cookies();
+//Membaca token session dari cookie.
   const token = cookieStore.get(COOKIE_NAME)?.value;
-
-
-//   jika cookie tidak ada
+//jika cookie tidak ada
   if(!token){
     return null
   }
-
-//   hash token yang telah diambil dari cookie
+//hash token yang telah diambil dari cookie
 const tokenHash = hashToken(token)
-
-// mencari session berdasarkan token 
+//mencari session berdasarkan token 
 const session = await prisma.session.findUnique({
     where:{
         tokenHash 
@@ -36,12 +30,10 @@ const session = await prisma.session.findUnique({
         user:true
     }
 })
-
 // jika session tidak ada kembalikan 
 if(!session){
     return null
 }
-
 // jika session sudah kadaluarsa, hapus dari database
 if(session.expiresAt.getTime() <= Date.now()){
 await prisma.session.delete({
@@ -51,12 +43,10 @@ await prisma.session.delete({
 })
 return null
 }
- 
 return {
     id:session.user.id,
     name:session.user.name,
     email:session.user.email,
     avatar:session.user.avatar
 }
-
 }

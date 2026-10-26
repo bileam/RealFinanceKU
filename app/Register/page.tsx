@@ -6,7 +6,7 @@ export default function RegisterPage() {
 return(
   <div className="w-full h-screen md:flex">
   
-    <div className="md:w-[40%] bg-primary p-6 text-white flex flex-col items-center ">
+    <div className="md:w-[40%] bg-primary justify-center p-6 text-white flex flex-col items-center ">
       <div className="flex gap-2 items-center  w-135 mt-5">
            <BadgeDollarSign className="w-20 h-20 text-sky-400"/>
             <div className="">
@@ -16,7 +16,6 @@ return(
       </div>
       <div className=" mt-5 text-5xl w-130 text-white font-bold">    
           <h2>Mulai Mengelola Keuangan Pribadi anda</h2>
-
       </div>
       <p className="w-130 mt-5">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quo placeat nulla corrupti sapiente eveniet excepturi consectetur, voluptas esse molestiae eligendi?</p>
 
