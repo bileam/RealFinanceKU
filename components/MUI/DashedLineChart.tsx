@@ -30,7 +30,7 @@ export default function DashedLineChart() {
     async function fetchChart() {
       try {
         const response = await fetch(
-          "http://localhost:3000/api/chartmonth?idUser=de2ce9d4-a628-46a2-9784-48710c51f46f"
+          "http://localhost:3000/api/chartmonth"
         );
 
         if (!response.ok) {

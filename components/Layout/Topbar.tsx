@@ -1,11 +1,50 @@
 "use client";
 
 import { Bell, ChevronDown, MoonStar, Search, Sun, UserPen } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 const THEME_STORAGE_KEY = "financeku-theme";
 
+type profile = {
+  id: string,
+  name: string,
+email:string,
+avatar:string | null
+
+}
+
+type responseProfile = {
+  success:boolean,
+  message:string,
+  data?:profile
+}
+
 export default function Topbar() {
+
+  const [dataprofile,setProfile] = useState<profile | null>(null)
+  const [loading,setLoading] = useState(false)
+  useEffect(()=>{
+async function fetchProfile(){
+  try {
+    setLoading(true)
+    const response = await fetch("/api/me")
+    const result :responseProfile = await response.json()
+    if(!response.ok || !result.success || !result.data){
+      toast.error(result.message || "gagal mengambil data profile")
+      return
+    }
+    setProfile(result.data)
+  } catch (error) {
+    console.error("gagal mengambil data profile",error)
+    toast.error("Terjadi kesalahan saat mengambil data profile")
+    
+  }finally{
+setLoading(false)
+  }
+}
+fetchProfile()
+  },[])
   useEffect(() => {
     const dark = localStorage.getItem(THEME_STORAGE_KEY) === "dark";
     document.documentElement.classList.toggle("dark", dark);
@@ -16,6 +55,8 @@ export default function Topbar() {
     document.documentElement.classList.toggle("dark", nextIsDark);
     localStorage.setItem(THEME_STORAGE_KEY, nextIsDark ? "dark" : "light");
   }
+
+  
 
   return (
     <div className="flex w-full justify-between">
@@ -39,9 +80,9 @@ export default function Topbar() {
           <Sun className="hidden dark:block" aria-hidden="true" />
         </button>
         <div className="flex items-center gap-4">
-          <UserPen className="h-10 w-10 rounded-full border bg-primary p-2 text-white" />
+          <UserPen className="h-10 w-10 rounded-full cursor-pointer bg-primary p-2 text-white" />
           <button className="flex cursor-pointer text-primary dark:text-indigo-300">
-            <span>Bileam mangalla</span>
+            <span>{dataprofile?.name.toUpperCase()}</span>
             <ChevronDown className="text-primary dark:text-indigo-300" />
           </button>
         </div>

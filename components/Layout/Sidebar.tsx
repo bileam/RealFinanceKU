@@ -77,7 +77,7 @@ export default function Sidebar() {
 
       toast.success(result.message || "Berhasil logout");
 
-      router.replace("/Login");
+      router.replace("/login");
       router.refresh();
     } catch (error) {
       console.error("Terjadi kesalahan saat logout:", error);
@@ -92,7 +92,6 @@ export default function Sidebar() {
       <div className="relative z-20 flex flex-col gap-20">
         <div className="mt-2 flex items-center justify-center gap-1">
           <BadgeDollarSign className="w-10 text-sky-400" />
-
           <div>
             <h2 className="-mb-3 text-2xl">
               Finance<span className="font-sans text-2xl">Ku</span>
@@ -148,7 +147,7 @@ export default function Sidebar() {
       {/* Modal Konfirmasi Logout: tampil di tengah layar */}
       {showLogoutModal && (
         <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 px-4 backdrop-blur-sm"
           onClick={() => {
             if (!isLoggingOut) setShowLogoutModal(false);
           }}

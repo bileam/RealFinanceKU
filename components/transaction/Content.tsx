@@ -6,7 +6,7 @@
 import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-const USER_ID = "de2ce9d4-a628-46a2-9784-48710c51f46f";
+// const USER_ID = "de2ce9d4-a628-46a2-9784-48710c51f46f";
 const LIMIT = 5;
 
 type Transaction = {
@@ -99,7 +99,7 @@ export default function Content() {
 
     async function fetchCategories() {
       try {
-        const response = await fetch(`http://localhost:3000/api/categories?idUser=${USER_ID}&type=all`, {
+        const response = await fetch(`http://localhost:3000/api/categories?type=all`, {
           signal: controller.signal,
         });
         const result: CategoriesResponse = await response.json();
@@ -132,7 +132,7 @@ export default function Content() {
       setError("");
 
       const params = new URLSearchParams({
-        idUser: USER_ID,
+        // idUser: USER_ID,
         page: String(currentPage),
         limit: String(LIMIT),
       });
@@ -296,11 +296,11 @@ export default function Content() {
           </button>
         </div>
       </div>
-      {categoryError && (
+      {/* {categoryError && (
         <p role="alert" className="text-sm text-rose-600">
           {categoryError}
         </p>
-      )}
+      )} */}
 
       {/* DAFTAR TRANSAKSI */}
       <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-surface">
@@ -344,9 +344,8 @@ export default function Content() {
                     {[28, 36, 24, 20, 28, 18].map((width, columnIndex) => (
                       <td
                         key={columnIndex}
-                        className={`px-4 py-5 ${
-                          columnIndex === 4 ? "text-right" : ""
-                        } ${columnIndex === 5 ? "text-center" : ""}`}
+                        className={`px-4 py-5 ${columnIndex === 4 ? "text-right" : ""
+                          } ${columnIndex === 5 ? "text-center" : ""}`}
                       >
                         <div
                           className="transaction-skeleton-bar h-2 rounded-full"
@@ -397,11 +396,10 @@ export default function Content() {
 
                     <td className="px-4 py-5">
                       <span
-                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
-                          item.type === "income"
+                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${item.type === "income"
                             ? "bg-emerald-50 text-emerald-600"
                             : "bg-rose-50 text-rose-600"
-                        }`}
+                          }`}
                       >
                         {item.type === "income"
                           ? "Pemasukan"
@@ -410,11 +408,10 @@ export default function Content() {
                     </td>
 
                     <td
-                      className={`whitespace-nowrap px-4 py-5 text-right font-semibold tabular-nums ${
-                        item.type === "income"
+                      className={`whitespace-nowrap px-4 py-5 text-right font-semibold tabular-nums ${item.type === "income"
                           ? "text-emerald-600"
                           : "text-rose-600"
-                      }`}
+                        }`}
                     >
                       {item.type === "income" ? "+" : "-"}
                       {formatRupiah(Number(item.amount))}
@@ -422,11 +419,10 @@ export default function Content() {
 
                     <td className="px-4 py-5 text-center">
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                          item.status === "success"
+                        className={`rounded-full px-3 py-1 text-xs font-semibold ${item.status === "success"
                             ? "bg-emerald-50 text-emerald-600"
                             : "bg-amber-50 text-amber-600"
-                        }`}
+                          }`}
                       >
                         {item.status === "success"
                           ? "Berhasil"
@@ -461,90 +457,89 @@ export default function Content() {
             </span>{" "}
             data
           </p>
-<div className="flex flex-wrap items-center justify-end gap-2">
-  <button
-    type="button"
-    aria-label="Halaman sebelumnya"
-    onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-    disabled={loading || currentPage <= 1 || totalPages === 0}
-    className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-500 dark:hover:bg-slate-800"
-  >
-    <ChevronLeft size={17} />
-  </button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <button
+              type="button"
+              aria-label="Halaman sebelumnya"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={loading || currentPage <= 1 || totalPages === 0}
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-500 dark:hover:bg-slate-800"
+            >
+              <ChevronLeft size={17} />
+            </button>
 
-  {(() => {
-    const pages = [];
-    const maxVisiblePages = 4;
+            {(() => {
+              const pages = [];
+              const maxVisiblePages = 4;
 
-    if (totalPages <= maxVisiblePages) {
-      // Show all pages if totalPages is less than or equal to maxVisiblePages
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-    } else {
-      // Always show the first page
-      pages.push(1);
+              if (totalPages <= maxVisiblePages) {
+                // Show all pages if totalPages is less than or equal to maxVisiblePages
+                for (let i = 1; i <= totalPages; i++) {
+                  pages.push(i);
+                }
+              } else {
+                // Always show the first page
+                pages.push(1);
 
-      // Show ellipsis if currentPage is far from the first page
-      if (currentPage > 3) {
-        pages.push("...");
-      }
+                // Show ellipsis if currentPage is far from the first page
+                if (currentPage > 3) {
+                  pages.push("...");
+                }
 
-      // Show the current page and its neighbors
-      const startPage = Math.max(2, currentPage - 1);
-      const endPage = Math.min(totalPages - 1, currentPage + 1);
+                // Show the current page and its neighbors
+                const startPage = Math.max(2, currentPage - 1);
+                const endPage = Math.min(totalPages - 1, currentPage + 1);
 
-      for (let i = startPage; i <= endPage; i++) {
-        pages.push(i);
-      }
+                for (let i = startPage; i <= endPage; i++) {
+                  pages.push(i);
+                }
 
-      // Show ellipsis if currentPage is far from the last page
-      if (currentPage < totalPages - 2) {
-        pages.push("...");
-      }
+                // Show ellipsis if currentPage is far from the last page
+                if (currentPage < totalPages - 2) {
+                  pages.push("...");
+                }
 
-      // Always show the last page
-      pages.push(totalPages);
-    }
+                // Always show the last page
+                pages.push(totalPages);
+              }
 
-    return pages.map((page, index) =>
-      typeof page === "number" ? (
-        <button
-          key={page}
-          type="button"
-          onClick={() => setCurrentPage(page)}
-          disabled={loading}
-          className={`h-9 min-w-9 rounded-lg px-3 text-sm font-semibold transition ${
-            currentPage === page
-              ? "bg-indigo-600 text-white shadow-sm shadow-indigo-200"
-              : "border border-slate-200 bg-white text-slate-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-700 dark:bg-surface dark:text-slate-300 dark:hover:border-indigo-500 dark:hover:bg-slate-800 dark:hover:text-indigo-300"
-          }`}
-        >
-          {page}
-        </button>
-      ) : (
-        <span
-          key={`ellipsis-${index}`}
-          className="h-9 min-w-9 flex items-center justify-center text-sm text-slate-600 dark:text-slate-300"
-        >
-          ...
-        </span>
-      )
-    );
-  })()}
+              return pages.map((page, index) =>
+                typeof page === "number" ? (
+                  <button
+                    key={page}
+                    type="button"
+                    onClick={() => setCurrentPage(page)}
+                    disabled={loading}
+                    className={`h-9 min-w-9 rounded-lg px-3 text-sm font-semibold transition ${currentPage === page
+                        ? "bg-indigo-600 text-white shadow-sm shadow-indigo-200"
+                        : "border border-slate-200 bg-white text-slate-600 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-700 dark:bg-surface dark:text-slate-300 dark:hover:border-indigo-500 dark:hover:bg-slate-800 dark:hover:text-indigo-300"
+                      }`}
+                  >
+                    {page}
+                  </button>
+                ) : (
+                  <span
+                    key={`ellipsis-${index}`}
+                    className="h-9 min-w-9 flex items-center justify-center text-sm text-slate-600 dark:text-slate-300"
+                  >
+                    ...
+                  </span>
+                )
+              );
+            })()}
 
-  <button
-    type="button"
-    aria-label="Halaman berikutnya"
-    onClick={() =>
-      setCurrentPage((page) => Math.min(totalPages, page + 1))
-    }
-    disabled={loading || currentPage >= totalPages || totalPages === 0}
-    className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-500 dark:hover:bg-slate-800"
-  >
-    <ChevronRight size={17} />
-  </button>
-</div>
+            <button
+              type="button"
+              aria-label="Halaman berikutnya"
+              onClick={() =>
+                setCurrentPage((page) => Math.min(totalPages, page + 1))
+              }
+              disabled={loading || currentPage >= totalPages || totalPages === 0}
+              className="flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-slate-600 transition hover:border-indigo-300 hover:bg-indigo-50 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:text-slate-300 dark:hover:border-indigo-500 dark:hover:bg-slate-800"
+            >
+              <ChevronRight size={17} />
+            </button>
+          </div>
         </div>
       </div>
     </div>

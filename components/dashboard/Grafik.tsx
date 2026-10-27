@@ -32,7 +32,7 @@ export default function Grafik(){
         try {
                 const response = await fetch("http://localhost:3000/api/transaksi?idUser=de2ce9d4-a628-46a2-9784-48710c51f46f")
                 if(!response.ok){
-                    throw new Error("gagal mengambil data")
+                    throw new Error("Silakan login terlebih dahulu")
                 }
                 const result : transactionApiResponse = await response.json()
                 // console.log(result.data)

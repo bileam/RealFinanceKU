@@ -1,16 +1,18 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getAuthenticatedUser } from "@/lib/Auth";
 
 export async function GET(request: NextRequest) {
   try {
-    const idUser = request.nextUrl.searchParams.get("idUser");
+    // const idUser = request.nextUrl.searchParams.get("idUser");
+    const idUser = await getAuthenticatedUser()
 
     if (!idUser) {
       return NextResponse.json(
         {
           success: false,
-          message: "ID pengguna tidak valid",
+          message: "Login terlebih dahulu",
         },
         { status: 400 }
       );
@@ -32,7 +34,7 @@ export async function GET(request: NextRequest) {
     // Ambil pemasukan dan pengeluaran bulan ini
     const transactions = await prisma.transaction.findMany({
       where: {
-        userId: idUser,
+        userId: idUser.id,
         type: {
           in: ["income", "expense"],
         },

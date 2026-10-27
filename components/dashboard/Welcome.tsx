@@ -46,8 +46,8 @@ export default function Welcome() {
     <div className="relative space-y-2 overflow-hidden rounded-2xl border border-primary-dark/10 bg-primary px-6 py-6 text-white shadow-sm shadow-primary/20 transition-colors duration-300 dark:border-indigo-300/10 dark:bg-gradient-to-br dark:from-indigo-950 dark:via-[#242044] dark:to-slate-900 dark:shadow-black/20">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="z-10 text-5xl brightness-125">
-            Hallo, {profile?.name ?? "Pengguna"}!
+          <h2 className="z-10 text-5xl brightness-125 ">
+            Hallo, {profile?.name.toLocaleUpperCase() ?? "Pengguna"}!
           </h2>
 
           <p className="z-10 text-lg text-gray-300 dark:text-slate-300">

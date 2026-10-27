@@ -16,7 +16,7 @@ export async function POST(){
     try {
         // mengambil cookie dari request
         const cookie = await cookies()
-        console.log(cookie)
+
        // membaca token session dari cookie
        const token =  cookie.get(COOKIE_NAME)?.value
 
