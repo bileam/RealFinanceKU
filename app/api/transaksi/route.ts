@@ -4,10 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request:NextRequest){
     try {
-        // const idUser = request.nextUrl.searchParams.get("idUser")
         const idUser = await getAuthenticatedUser()
-        // console.log(idUser)
-        
         const type = request.nextUrl.searchParams.get("type")
         const categoryId = request.nextUrl.searchParams.get("categoryId")
         const startDate = request.nextUrl.searchParams.get("startDate")

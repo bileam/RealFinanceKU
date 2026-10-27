@@ -77,7 +77,7 @@ export default function Sidebar() {
 
       toast.success(result.message || "Berhasil logout");
 
-      router.replace("/login");
+      router.replace("/Login");
       router.refresh();
     } catch (error) {
       console.error("Terjadi kesalahan saat logout:", error);

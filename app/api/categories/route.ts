@@ -55,42 +55,72 @@ export async function GET(request:NextRequest){
     },{status:400})
   }
 }
-export async function POST(request:NextRequest){
-try {
-    const body = await request.json()
-    const {name,type,icon,color} = body
-    
-    if(!name || !type){
-        return NextResponse.json({
-            success : false,
-            message:"nama dan tipe categori wajib di isi"
-        },{status:400})
-    }  
-    if(!["income","expense"].includes(type)){
-        return NextResponse.json(
-            { success: false, message: "Tipe harus income atau expense" },
-            { status: 400 }
-          );
-    } 
-    const  categories = await prisma.category.create(
+
+
+export async function POST(req: NextRequest) {
+  try {
+    // 1. Periksa pengguna yang sedang login
+    const user = await getAuthenticatedUser();
+
+    if (!user) {
+      return NextResponse.json(
         {
-         data:{
-                name,
-                type,
-                icon: icon || null,
-                color: color || null
-            }
-        }
-    )
-    return NextResponse.json(
-        { success: true, data: categories },
-        { status: 201 }
+          success: false,
+          message: "Silakan login terlebih dahulu",
+        },
+        { status: 401 },
       );
-} catch (error) {
-    console.error("Gagal menambahkan kategori:", error);
+    }
+
+    // 2. Ambil data dari request
+    const body = await req.json();
+    const { name, type, icon, color } = body;
+
+    // 3. Validasi nama dan jenis kategori
+    if (
+      typeof name !== "string" ||
+      !name.trim() ||
+      typeof type !== "string" ||
+      !["income", "expense"].includes(type)
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Nama atau jenis kategori tidak valid",
+        },
+        { status: 400 },
+      );
+    }
+
+    // 4. Simpan kategori ke database
+    const category = await prisma.category.create({
+      data: {
+        name: name.trim(),
+        type,
+        icon,
+        color,
+        userId: user.id,
+      },
+    });
+
+    // 5. Kirim respons sukses
     return NextResponse.json(
-      { success: false, message: "Gagal menambahkan kategori" },
-      { status: 500 }
-    );   
-}
+      {
+        success: true,
+        message: "Kategori berhasil ditambahkan",
+        category,
+      },
+      { status: 201 },
+    );
+  } catch (error) {
+    console.error("Gagal menambahkan kategori:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Terjadi kesalahan pada server",
+      },
+      { status: 500 },
+    );
+  }
 }

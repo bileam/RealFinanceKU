@@ -13,6 +13,7 @@ type ChartItem = {
 
 type ApiResponse = {
   success: boolean;
+  message?: string;
   data: ChartItem[];
 };
 
@@ -29,18 +30,14 @@ export default function DashedLineChart() {
   useEffect(() => {
     async function fetchChart() {
       try {
-        const response = await fetch(
-          "http://localhost:3000/api/chartmonth"
-        );
-
-        if (!response.ok) {
-          throw new Error("Gagal mengambil data chart");
-        }
+        const response = await fetch("/api/chartmonth", {
+          cache: "no-store",
+        });
 
         const result: ApiResponse = await response.json();
 
-        if (!result.success) {
-          throw new Error("Data chart tidak berhasil diambil");
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || "Gagal mengambil data chart");
         }
 
         setChartData(result.data);

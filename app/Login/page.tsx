@@ -2,17 +2,20 @@
 import { BadgeDollarSign, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 
 export default function Login(){
     const Router = useRouter()
+    useEffect(() => {
+        document.documentElement.classList.remove("dark");
+    }, []);
+
     const [email,setEmail] = useState("")
     const [password,setPassword] = useState("")
     const [loading,setLoading] = useState(false)
     const [hide,setHide] = useState(true)
-
 
     function Validasi(){
         
@@ -20,35 +23,36 @@ export default function Login(){
         // memerikasa apakah email kosong,
         if(cleanEmail === ""){
             toast.error("Email wajib diisi")
-    return false
+         return false
         }
-
         // mengecek format email
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if(!emailPattern.test(cleanEmail)){
-toast.error("format email tidak valid")
-return false
+        toast.error("format email tidak valid")
+        return false
         }
 
         // memerikasa apakah password kosong
-if(password === ""){
-    toast.error("passord wajib diisi")
-    return false
+       if(password === ""){
+       toast.error("passord wajib diisi")
+       return false
+    }
 
-}
-   if(password.length <= 4 )
-  {
+    if(password.length <= 4 ) {
     toast.error("minimal 4 karakter")
     return 
    } 
-return true
-    }
+    
+   return true
+}
+
+
 
 
   async  function handleSubmit(e: React.FormEvent<HTMLFormElement>){
         e.preventDefault()
 
-        if(!Validasi()){
+        if(loading || !Validasi()){
             return
         }
         
@@ -104,7 +108,7 @@ if(!response.ok || result.status === false){
            <BadgeDollarSign className="w-20 h-20 text-sky-400"/>
             <div className="">
                 <h2 className="-mb-1 text-5xl" >Finance<span className="font-sans text-5xl">Ku</span></h2>
-                <span className="inline-block text-[15px] text-gray-300 dark:text-slate-400">personal finance manajement</span>
+                <span className="inline-block text-[15px] text-gray-300">personal finance manajement</span>
             </div>
       </div>
       <div className=" mt-5 text-5xl w-130 text-white font-bold">    
@@ -142,7 +146,13 @@ if(!response.ok || result.status === false){
                
             </div>
             <div className="flex justify-center">
-<button type="submit" className="px-4 py-3 bg-primary w-full rounded-xl text-white hover:cursor-pointer hover:brightness-120">Masuk</button>
+          <button
+    type="submit"
+    disabled={loading}
+    className="px-4 py-3 bg-primary w-full rounded-xl text-white hover:brightness-120 disabled:cursor-not-allowed disabled:opacity-70"
+>
+    {loading ? "Memproses..." : "Masuk"}
+</button>
             </div>
         </form>
         <div className="flex flex-col items-center">
