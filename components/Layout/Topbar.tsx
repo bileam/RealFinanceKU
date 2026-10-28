@@ -3,6 +3,7 @@
 import { Bell, ChevronDown, MoonStar, Search, Sun, UserPen } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import Clock from "./Clock";
 
 const THEME_STORAGE_KEY = "financeku-theme";
 
@@ -61,12 +62,13 @@ fetchProfile()
   return (
     <div className="flex w-full justify-between">
       <div className="relative items-center">
-        <input
+        {/* <input
           type="search"
           className="w-100 rounded-lg bg-primary-dark/10 px-14 py-2 text-primary-dark outline-none placeholder:text-primary-dark dark:bg-white/10 dark:text-slate-100 dark:placeholder:text-slate-300"
           placeholder="searching..."
         />
-        <Search className="absolute left-4 top-2 inline-block text-primary-dark dark:text-slate-200" />
+        <Search className="absolute left-4 top-2 inline-block text-primary-dark dark:text-slate-200" /> */}
+        <Clock/>
       </div>
       <div className="flex items-center justify-center gap-8">
         <Bell className="cursor-pointer text-primary dark:text-indigo-300" />

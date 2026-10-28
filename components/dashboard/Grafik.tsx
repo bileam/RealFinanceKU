@@ -30,7 +30,7 @@ export default function Grafik(){
     useEffect(()=>{
         async function fetchTransection(){
         try {
-                const response = await fetch("http://localhost:3000/api/transaksi?idUser=de2ce9d4-a628-46a2-9784-48710c51f46f")
+                const response = await fetch("/api/transaksi?limit=10")
                 if(!response.ok){
                     throw new Error("Silakan login terlebih dahulu")
                 }
@@ -38,7 +38,7 @@ export default function Grafik(){
                 // console.log(result.data)
                 setTransaction(result.data)
         } catch (error) {
-                console.log("terjadi kesalahan")
+                console.log("terjadi kesalahan",error)
         }finally{
                 setLoading(false)
         }

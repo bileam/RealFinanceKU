@@ -6,7 +6,6 @@
 import { Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
-// const USER_ID = "de2ce9d4-a628-46a2-9784-48710c51f46f";
 const LIMIT = 5;
 
 type Transaction = {
@@ -130,9 +129,7 @@ export default function Content() {
     try {
       setLoading(true);
       setError("");
-
       const params = new URLSearchParams({
-        // idUser: USER_ID,
         page: String(currentPage),
         limit: String(LIMIT),
       });

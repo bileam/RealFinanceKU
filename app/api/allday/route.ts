@@ -1,14 +1,11 @@
 
 import { getAuthenticatedUser } from "@/lib/Auth";
 import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    // 1. Mengambil idUser dari query parameter URL
-    // const idUser = request.nextUrl.searchParams.get("idUser");
     const idUser = await getAuthenticatedUser();
-    // 2. Validasi: pastikan idUser dikirim
     if (!idUser) {
       return NextResponse.json(
         {

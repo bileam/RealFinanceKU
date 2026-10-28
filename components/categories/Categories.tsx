@@ -28,7 +28,6 @@ type typeCategories = "all" | "income" | "expense"
 
 export default function Categories(){
 
-    const idUser = "de2ce9d4-a628-46a2-9784-48710c51f46f"
     const [filterType,setFilterType] = useState<typeCategories>("all")
     const [dataCategori,setDataCategori] = useState<categories[]>([])
     const [summary,setsummary] = useState(
@@ -55,11 +54,9 @@ useEffect(() => {
             try {
                 setLoading(true)
                 setError("")
-                const params = new URLSearchParams({
-                    idUser,type:filterType
-                })
+                const params = new URLSearchParams({ type: filterType })
                 
-                const response = await fetch(`http://localhost:3000/api/categories?${params.toString()}`)
+                const response = await fetch(`/api/categories?${params.toString()}`)
 
                 const result :categoriResponse= await response.json()
 
@@ -89,7 +86,7 @@ if (!controller.signal.aborted) {
             }
         }
         fetchDataCategory()
-    },[idUser,filterType])
+    },[filterType])
     
 
     // console.log(dataCategori)

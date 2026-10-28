@@ -19,10 +19,12 @@ type ResponseAPI = {
 
 export default function Welcome() {
   const [profile, setProfile] = useState<Profile | null>(null);
+  const [loading,setloading] = useState(true)
 
   useEffect(() => {
     async function fetchDataProfile() {
       try {
+        setloading(true)
         const response = await fetch("/api/me");
 
         const result: ResponseAPI = await response.json();
@@ -36,6 +38,8 @@ export default function Welcome() {
       } catch (error) {
         console.error("Gagal mengambil data profil:", error);
         toast.error("Terjadi kesalahan saat mengambil profil");
+      }finally{
+        setloading(false)
       }
     }
 
@@ -43,13 +47,15 @@ export default function Welcome() {
   }, []);
 
   return (
-    <div className="relative space-y-2 overflow-hidden rounded-2xl border border-primary-dark/10 bg-primary px-6 py-6 text-white shadow-sm shadow-primary/20 transition-colors duration-300 dark:border-indigo-300/10 dark:bg-gradient-to-br dark:from-indigo-950 dark:via-[#242044] dark:to-slate-900 dark:shadow-black/20">
+    <div className="relative space-y-2  overflow-hidden rounded-2xl border border-primary-dark/10 bg-primary px-6 py-6 text-white shadow-sm shadow-primary/20 transition-colors duration-300 dark:border-indigo-300/10 dark:bg-gradient-to-br dark:from-indigo-950 dark:via-[#242044] dark:to-slate-900 dark:shadow-black/20">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="z-10 text-5xl brightness-125 ">
+          {
+            loading?( <h2 className="z-10 text-5xl brightness-125 h-12  w-100 rounded-full bg-gray-600">   </h2>):
+            ( <h2 className="z-10 text-5xl brightness-125 ">
             Hallo, {profile?.name.toLocaleUpperCase() ?? "Pengguna"}!
-          </h2>
-
+          </h2>)
+          }
           <p className="z-10 text-lg text-gray-300 dark:text-slate-300">
             Kelola keuanganmu dengan lebih baik di sini.
           </p>

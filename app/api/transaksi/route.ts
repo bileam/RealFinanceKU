@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request:NextRequest){
     try {
-        const idUser = await getAuthenticatedUser()
+        const user = await getAuthenticatedUser()
         const type = request.nextUrl.searchParams.get("type")
         const categoryId = request.nextUrl.searchParams.get("categoryId")
         const startDate = request.nextUrl.searchParams.get("startDate")
@@ -13,15 +13,15 @@ export async function GET(request:NextRequest){
             request.nextUrl.searchParams.get("page") ?? 1
         )
         const limit = Number(
-            request.nextUrl.searchParams.get("limit")
+            request.nextUrl.searchParams.get("limit") ?? 10
         )
-        if(!idUser){
+        if(!user){
             return NextResponse.json({
                 success: false,
-                message: "anda tidak memiliki user id"
+                message: "Silakan login terlebih dahulu"
             },
         {
-            status:400
+            status:401
         })}
 
           if(!Number.isInteger(page) || page < 1 || !Number.isInteger(limit) || limit < 1){
@@ -82,7 +82,7 @@ export async function GET(request:NextRequest){
             }
 
             const where = {
-                userId: idUser.id,
+                userId: user.id,
                 ...(type ? { type } : {}),
                 ...(categoryId ? { categoryId } : {}),
                 ...(startDate || endDate

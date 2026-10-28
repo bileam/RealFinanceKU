@@ -4,8 +4,7 @@ import { getAuthenticatedUser } from "@/lib/Auth";
 
 export async function GET(request:NextRequest){
   try {
-    //  const iduser = await request.nextUrl.searchParams.get("idUser")
-    const type = await request.nextUrl.searchParams.get("type") ?? "all"
+    const type = request.nextUrl.searchParams.get("type") ?? "all"
     const AuthUser = await getAuthenticatedUser()
     if(!AuthUser){
       return NextResponse.json({

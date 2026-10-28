@@ -27,7 +27,7 @@ export default function Spesifik() {
       setError(null);
 
       const response = await fetch(
-        "/api/allday?idUser=de2ce9d4-a628-46a2-9784-48710c51f46f",
+        "/api/allday",
         { cache: "no-store" }
       );
 
