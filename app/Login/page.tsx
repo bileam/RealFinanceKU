@@ -28,8 +28,8 @@ export default function Login(){
         // mengecek format email
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if(!emailPattern.test(cleanEmail)){
-        toast.error("format email tidak valid")
-        return false
+           toast.error("format email tidak valid")
+           return false
         }
 
         // memerikasa apakah password kosong
@@ -56,9 +56,9 @@ export default function Login(){
             return
         }
         
-    try {
+       try {
         // menandai loading
-setLoading(true)
+       setLoading(true)
 
         // mengirim  email dan password ke api
 const response = await fetch("http://localhost:3000/api/login",{
@@ -75,15 +75,14 @@ const response = await fetch("http://localhost:3000/api/login",{
         // mengambil response api await response.json()
 const result = await response.json()
         //  jika api gagal kembalikan !response.ok atau result.success = false
-        console.log("ini adalah response",response)
-        console.log("ini adalah result",result)
-if(!response.ok || result.status === false){
+        // console.log("ini adalah response",response)
+        // console.log("ini adalah result",result)
+   if(!response.ok || result.status === false){
     return toast.error("akun anda tidak valid")
-}
-        // jika login berhasil berikan toast
-        toast.success("login berhasil")
-
-        // jika berhasil redirect ke dashboard router.push("/dashboard") 
+   }
+     // jika login berhasil berikan toast
+     toast.success("login berhasil")
+        // jika berhasil redirect ke dashboard router.push("/dashboard")         
         Router.push("/dashboard")
     } catch (error) {
         console.error("terjadi kesalahan",error)
@@ -103,7 +102,7 @@ if(!response.ok || result.status === false){
     return(
         <div className="w-full h-screen md:flex overflow-hidden">
   
-    <div  className="md:w-[40%] relative bg-primary justify-center p-6 text-white flex flex-col items-center ">
+    <div  className={`md:w-[40%]  transition-all duration-500   relative bg-primary justify-center p-6 text-white flex flex-col items-center `}>
       <div className="flex gap-2 items-center  w-135 mt-5">
            <BadgeDollarSign className="w-20 h-20 text-sky-400"/>
             <div className="">
@@ -114,7 +113,7 @@ if(!response.ok || result.status === false){
       <div className=" mt-5 text-5xl w-130 text-white font-bold">    
           <h2>Mulai Mengelola Keuangan Pribadi anda</h2>
       </div>
-      <p className="w-130 mt-5">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Quo placeat nulla corrupti sapiente eveniet excepturi consectetur, voluptas esse molestiae eligendi?</p>
+      <p className="w-130 mt-5">Lorem ipsum, dolor sit amset consectetur adipisicing elit. Quo placeat nulla corrupti sapiente eveniet excepturi consectetur, voluptas esse molestiae eligendi?</p>
      {/* glow */}
       <div className="h-50 w-50 bg-primary-light/10  rounded-full absolute -bottom-10 -right-10 "></div>
       <div className="h-50 w-50 bg-primary-light/10  rounded-full absolute -top-10 -left-10 "></div>

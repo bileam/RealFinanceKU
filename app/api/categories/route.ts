@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getAuthenticatedUser } from "@/lib/Auth";
@@ -34,12 +33,9 @@ export async function GET(request:NextRequest){
         updatedAt:true
       }
     })
-
     const totalIncome = response.filter((item)=>item.type === "income").length
     const totalexpense = response.filter((item)=>item.type === "expense").length
-
     const filterData = type === 'all'?response:response.filter((item)=>item.type === type)
-
    return NextResponse.json({
       success:true,
       countData : response.length,
@@ -59,9 +55,7 @@ export async function GET(request:NextRequest){
 
 export async function POST(req: NextRequest) {
   try {
-    // 1. Periksa pengguna yang sedang login
     const user = await getAuthenticatedUser();
-
     if (!user) {
       return NextResponse.json(
         {
@@ -71,12 +65,8 @@ export async function POST(req: NextRequest) {
         { status: 401 },
       );
     }
-
-    // 2. Ambil data dari request
     const body = await req.json();
     const { name, type, icon, color } = body;
-
-    // 3. Validasi nama dan jenis kategori
     if (
       typeof name !== "string" ||
       !name.trim() ||
@@ -91,8 +81,6 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       );
     }
-
-    // 4. Simpan kategori ke database
     const category = await prisma.category.create({
       data: {
         name: name.trim(),
@@ -102,8 +90,6 @@ export async function POST(req: NextRequest) {
         userId: user.id,
       },
     });
-
-    // 5. Kirim respons sukses
     return NextResponse.json(
       {
         success: true,
