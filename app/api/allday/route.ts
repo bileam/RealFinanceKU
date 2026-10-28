@@ -20,7 +20,7 @@ export async function GET() {
       where: {
         userId: idUser.id,
         type: "income",
-        status: "success",
+        status: { in: ["success", "berhasil", ""] },
       },
       _sum: {
         amount: true,
@@ -32,7 +32,7 @@ export async function GET() {
       where: {
         userId: idUser.id,
         type: "expense",
-        status: "success",
+        status: { in: ["success", "berhasil", ""] },
       },
       _sum: {
         amount: true,

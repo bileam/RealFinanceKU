@@ -37,7 +37,9 @@ export async function GET() {
         type: {
           in: ["income", "expense"],
         },
-        status: "success",
+        status: {
+          in: ["success", "berhasil", ""],
+        },
         transactionDate: {
           gte: startDate,
           lt: endDate,

@@ -136,9 +136,82 @@ html.dark .transaction-skeleton-bar {
   animation: transaction-skeleton-enter 220ms ease-out both;
 }
 
+.weather-sunny-icon {
+  transform-origin: center;
+  animation: weather-sun-spin 18s linear infinite, weather-sun-glow 2.8s ease-in-out infinite;
+}
+
+.weather-rainy-icon {
+  animation: weather-rain-cloud 2s ease-in-out infinite;
+}
+
+.weather-rain-drop {
+  width: 2px;
+  height: 6px;
+  border-radius: 9999px;
+  background: #38bdf8;
+  opacity: 0;
+  animation: weather-rain-fall 900ms ease-in infinite;
+}
+
+.weather-rain-drop:nth-child(2) {
+  animation-delay: 300ms;
+}
+
+.weather-rain-drop:nth-child(3) {
+  animation-delay: 600ms;
+}
+
+@keyframes weather-sun-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes weather-sun-glow {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgba(245, 158, 11, 0));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.65));
+  }
+}
+
+@keyframes weather-rain-cloud {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes weather-rain-fall {
+  0% {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+
+  35% {
+    opacity: 0.9;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .transaction-skeleton-bar,
-  .transaction-skeleton-row {
+  .transaction-skeleton-row,
+  .weather-sunny-icon,
+  .weather-rainy-icon,
+  .weather-rain-drop {
     animation: none;
   }
 }

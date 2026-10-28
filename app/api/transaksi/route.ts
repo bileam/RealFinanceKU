@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request:NextRequest){
     try {
-        const user = await getAuthenticatedUser()
+        const idUser = await getAuthenticatedUser()
         const type = request.nextUrl.searchParams.get("type")
         const categoryId = request.nextUrl.searchParams.get("categoryId")
         const startDate = request.nextUrl.searchParams.get("startDate")
@@ -13,15 +13,15 @@ export async function GET(request:NextRequest){
             request.nextUrl.searchParams.get("page") ?? 1
         )
         const limit = Number(
-            request.nextUrl.searchParams.get("limit") ?? 10
+            request.nextUrl.searchParams.get("limit")
         )
-        if(!user){
+        if(!idUser){
             return NextResponse.json({
                 success: false,
-                message: "Silakan login terlebih dahulu"
+                message: "anda tidak memiliki user id"
             },
         {
-            status:401
+            status:400
         })}
 
           if(!Number.isInteger(page) || page < 1 || !Number.isInteger(limit) || limit < 1){
@@ -82,7 +82,7 @@ export async function GET(request:NextRequest){
             }
 
             const where = {
-                userId: user.id,
+                userId: idUser.id,
                 ...(type ? { type } : {}),
                 ...(categoryId ? { categoryId } : {}),
                 ...(startDate || endDate
@@ -165,11 +165,20 @@ export async function GET(request:NextRequest){
     }
 }
 
+
 export async function POST(request:NextRequest){
 try {
+   const authUser = await getAuthenticatedUser()
     const body = await request.json()
-    const {userId,categoryId,type,amount,description,transactionDate,status} = body
+    const {categoryId,type,amount,description,transactionDate,status} = body
     // console.log(userId)
+
+    if(!authUser){
+        return NextResponse.json({
+            success:false,
+            messega:"silakan login terlebih dahulu"
+        },{status:401})
+    }
 
     // validasi inputan
     if (!amount) {
@@ -205,12 +214,17 @@ if (
 
 const DataTransaction = await prisma.transaction.create({
     data:{
-        userId,
+        userId:authUser.id,
         categoryId,
         type,amount,
         description,
         transactionDate:new Date(transactionDate),
-        status
+        status:
+            typeof status === "string" &&
+            status.trim() &&
+            status.trim().toLowerCase() !== "berhasil"
+                ? status.trim().toLowerCase()
+                : "success"
     }
 })
     return NextResponse.json({
