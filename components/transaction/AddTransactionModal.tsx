@@ -11,18 +11,60 @@ import {
   MoveUp,
   X,
 } from "lucide-react";
+import { useEffect, useState } from "react";
+
+
 
 type AddTransactionModalProps = {
   isOpen: boolean;
   onClose: () => void;
 };
 
+
+type categorie = {
+   id:string,
+    name:string,
+    type: "income" | "expense",
+    createdAt: string;
+    updatedAt: string;
+}
+
+type responseCategories = {
+  success: boolean,
+    countData : number,
+    countIncome:number,
+    countexpense:number,
+    data:categorie[]
+}
+
 export default function AddTransactionModal({
   isOpen,
   onClose,
 }: AddTransactionModalProps) {
+    const [datacategories,serDatacategories] = useState<categorie[]>([])
+    const [loading,setLoading] = useState(true)
   // Jika modal tidak terbuka, jangan tampilkan modal.
+  useEffect(()=>{
+async function GetCategory(){
+  try {
+    setLoading(true)
+    const response = await fetch(".api")
+    // const result: responseCategories = response.json()
+    // console.log(result)
+
+  } catch (error) {
+    
+  }finally{
+setLoading(false)
+  }
+}
+GetCategory()
+  },[])
   if (!isOpen) return null;
+
+
+
+
 
   return (
     <div
