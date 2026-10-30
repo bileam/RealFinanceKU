@@ -73,16 +73,19 @@ const response = await fetch("http://localhost:3000/api/login",{
 })
 
         // mengambil response api await response.json()
-const result = await response.json()
+    const result = await response.json()
         //  jika api gagal kembalikan !response.ok atau result.success = false
         // console.log("ini adalah response",response)
         // console.log("ini adalah result",result)
    if(!response.ok || result.status === false){
+    setPassword("")
     return toast.error("akun anda tidak valid")
    }
      // jika login berhasil berikan toast
-     toast.success("login berhasil")
-        // jika berhasil redirect ke dashboard router.push("/dashboard")         
+        toast.success("login berhasil")
+        // jika berhasil redirect ke dashboard router.push("/dashboard")   
+        setPassword("")    
+        setEmail("")  
         Router.push("/dashboard")
     } catch (error) {
         console.error("terjadi kesalahan",error)
