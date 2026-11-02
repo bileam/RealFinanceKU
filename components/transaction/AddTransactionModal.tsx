@@ -11,7 +11,8 @@ import {
   MoveUp,
   X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 
 
@@ -41,16 +42,51 @@ export default function AddTransactionModal({
   isOpen,
   onClose,
 }: AddTransactionModalProps) {
-    const [datacategories,serDatacategories] = useState<categorie[]>([])
+    const [datacategories,setDatacategories] = useState<categorie[]>([])
     const [loading,setLoading] = useState(true)
+  
+    const [form,setform] = useState({
+      categoryId : "",
+      type:"",
+      amount:"",
+      description:"",
+      transactionDate:"",
+      status:"berhasil"
+    })
+
+  const handleChange=(
+e:React.ChangeEvent<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>
+  )=>{
+  const {name,value} = e.target
+  setform((prev)=>({
+    ...prev,[name]:value
+  }))
+  }
+
+  const handleSubmit =(e:React.FormEvent<HTMLElement>)=>{
+    e.preventDefault()
+    
+  if(!form.categoryId){
+     toast.error("kategori harus diisi")
+     return
+  }
+
+  if(!form.amount || Number(form.amount)<=0){
+    toast.error("masukkan nominal")
+return 
+  }
+
+  console.log(form)
+  }
+
   // Jika modal tidak terbuka, jangan tampilkan modal.
   useEffect(()=>{
 async function GetCategory(){
   try {
     setLoading(true)
-    const response = await fetch(".api")
-    // const result: responseCategories = response.json()
-    // console.log(result)
+    const response = await fetch("http://localhost:3000/api/categories?&type=all")
+    const result : responseCategories = await response.json()
+    setDatacategories(result.data)
 
   } catch (error) {
     
@@ -62,9 +98,7 @@ GetCategory()
   },[])
   if (!isOpen) return null;
 
-
-
-
+  // console.log(datacategories)
 
   return (
     <div
@@ -111,28 +145,33 @@ GetCategory()
           </button>
         </div>
 
-        {/* Pilihan jenis transaksi */}
+<form onSubmit={handleSubmit}>
+ {/* Pilihan jenis transaksi */}
         <div className="mb-4  grid grid-cols-2 gap-3">
           <button
+          // onClick={()=>setform("")}
+          // expense
             type="button"
             className="flex items-center justify-center gap-2 rounded-xl border border-emerald-500 bg-emerald-500/10 px-3 py-2 font-medium text-emerald-700 transition-colors dark:bg-emerald-500/10 dark:text-emerald-400"
           >
             <MoveUp size={19} />
             Pemasukan
-          </button>
+        </button>
 
-          <button
+        <button
             type="button"
+            // income
             className="flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-3 py-2 font-medium text-gray-500 transition-colors cursor-pointer bg-red-500/20 text-red-500 dark:border-white/10 dark:text-slate-400 dark:hover:bg-white/5"
           >
             <MoveDown size={19} />
             Pengeluaran
-          </button>
+        </button>
         </div>
 
         {/* Nominal */}
         <div className="mb-4 flex  gap-2">
-          <div>   <label
+          <div>   
+            <label
             htmlFor="transaction-amount"
             className="mb-2 block text-sm font-medium"
           >
@@ -143,6 +182,9 @@ GetCategory()
               Rp
             </span>
             <input
+            name="amount"
+            value={form.amount}
+            onChange={handleChange}            
               id="transaction-amount"
               type="number"
               min="1"
@@ -162,13 +204,12 @@ GetCategory()
           </label>
           <div className="relative">
             <span  className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-gray-500 dark:text-slate-400 bg-green-500 h-2 w-2 rounded-full"></span>
-
             <select
               id="transaction-category"
-              defaultValue=""
+         
               className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-2 pr-10 pl-10 outline-none transition-colors focus:border-primary dark:border-white/10 dark:bg-slate-900"
             >
-              <option value="" className="flex gap-2 space-x-2" >
+              <option value="berhasil" className="flex gap-2 space-x-2" >
                 Berhasil
               </option>
             </select>
@@ -193,12 +234,23 @@ GetCategory()
 
             <select
               id="transaction-category"
-              defaultValue=""
+              name="categoryId"
+              value={form.categoryId}
+              onChange={handleChange}
+              // defaultValue=""
               className="w-full appearance-none rounded-xl border border-gray-200 bg-white py-2 pr-10 pl-10 outline-none transition-colors focus:border-primary dark:border-white/10 dark:bg-slate-900"
             >
               <option value="" disabled>
-                Pilih kategori
+                Pilih categori
               </option>
+              {
+                datacategories.map((item)=>(
+                  <option value={item.id} key={item.id} >
+                  {item.name}
+                </option>
+                ))
+              }
+           
             </select>
           </div>
 
@@ -224,8 +276,11 @@ GetCategory()
 
             <input
               id="transaction-date"
+              name="transactionDate"
+              value={form.transactionDate}
+              onChange={handleChange}
               type="date"
-              defaultValue={new Date().toLocaleDateString("en-CA")}
+              // defaultValue={new Date().toLocaleDateString("en-CA")}
               className="w-full rounded-xl border border-gray-200 bg-white py-3 pr-4 pl-10 outline-none transition-colors focus:border-primary dark:border-white/10 dark:bg-slate-900"
             />
           </div>
@@ -242,6 +297,9 @@ GetCategory()
           </label>
 
           <textarea
+          name="description"
+          value={form.description}
+          onChange={handleChange}
             id="transaction-description"
             rows={3}
             placeholder="Masukkan keterangan transaksi..."
@@ -260,12 +318,14 @@ GetCategory()
           </button>
 
           <button
-            type="button"
+            type="submit"
             className="flex-1 rounded-xl bg-primary px-4 py-2 font-medium text-primary-light transition-all hover:brightness-110"
           >
             Simpan Transaksi
           </button>
         </div>
+</form>
+       
       </div>
     </div>
   );

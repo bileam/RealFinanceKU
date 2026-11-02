@@ -112,23 +112,13 @@ body {
 }
 
 .transaction-skeleton-bar {
-  background: linear-gradient(
-    90deg,
-    #e5e7eb 25%,
-    #f3f4f6 50%,
-    #e5e7eb 75%
-  );
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
   background-size: 200% 100%;
   animation: transaction-skeleton-shimmer 1.6s ease-in-out infinite;
 }
 
 html.dark .transaction-skeleton-bar {
-  background: linear-gradient(
-    90deg,
-    #303247 25%,
-    #41435a 50%,
-    #303247 75%
-  );
+  background: linear-gradient(90deg, #303247 25%, #41435a 50%, #303247 75%);
   background-size: 200% 100%;
 }
 
@@ -138,7 +128,8 @@ html.dark .transaction-skeleton-bar {
 
 .weather-sunny-icon {
   transform-origin: center;
-  animation: weather-sun-spin 18s linear infinite, weather-sun-glow 2.8s ease-in-out infinite;
+  animation: weather-sun-spin 18s linear infinite,
+    weather-sun-glow 2.8s ease-in-out infinite;
 }
 
 .weather-rainy-icon {
