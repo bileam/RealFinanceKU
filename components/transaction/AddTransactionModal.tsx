@@ -53,7 +53,6 @@ export default function AddTransactionModal({
       transactionDate:"",
       status:"berhasil"
     })
-
   const handleChange=(
 e:React.ChangeEvent<HTMLInputElement|HTMLSelectElement|HTMLTextAreaElement>
   )=>{
